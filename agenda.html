@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Agenda - Central Executiva</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icone.svg" />
+  <link rel="stylesheet" href="./style.css?v=1" />
+</head>
+<body>
+<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2></header><main class="conteudo">
+  <div id="lista"></div>
+</main>
+<button class="fab" id="novo" aria-label="Novo compromisso">+</button>
+<div class="modal" id="modal"><div class="caixa">
+  <h3 id="modal-titulo">Novo compromisso</h3>
+  <label>Título *</label><input id="f-titulo" />
+  <label>Data *</label><input id="f-data" type="date" />
+  <label>Hora</label><input id="f-hora" type="time" />
+  <label>Local</label><input id="f-local" />
+  <label>Observações</label><textarea id="f-obs"></textarea>
+  <div class="acoes">
+    <button class="btn sec" id="cancelar">Cancelar</button>
+    <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
+    <button class="btn" id="salvar">Salvar</button>
+  </div>
+</div></div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js?v=1"></script>
+<script src="./app.js?v=1"></script>
+<script src="./agenda.js?v=1"></script>
+</body>
+</html>

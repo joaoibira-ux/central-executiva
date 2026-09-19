@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Central" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Central Executiva</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icone.svg" />
+  <link rel="stylesheet" href="./style.css?v=1" />
+</head>
+<body class="menu-body">
+
+<main class="hud">
+  <div class="anel anel-1"></div>
+  <div class="anel anel-2"></div>
+  <div class="anel anel-3"></div>
+
+  <div class="nucleo"><h1>CENTRAL<br>EXECUTIVA</h1></div>
+
+  <a class="item ativo" style="--i:0" href="./agenda.html" title="Agenda"><span>📅</span><em>Agenda</em></a>
+  <div class="item" style="--i:1"><span>📊</span></div>
+  <div class="item" style="--i:2"><span>✅</span></div>
+  <div class="item" style="--i:3"><span>📈</span></div>
+  <a class="item ativo" style="--i:4" href="./contatos.html" title="Contatos"><span>👥</span><em>Contatos</em></a>
+  <div class="item" style="--i:5"><span>🏅</span></div>
+  <div class="item" style="--i:6"><span>🔐</span></div>
+  <div class="item" style="--i:7"><span>🤝</span></div>
+  <div class="item" style="--i:8"><span>％</span></div>
+  <div class="item" style="--i:9"><span>💡</span></div>
+  <div class="item" style="--i:10"><span>🏛️</span></div>
+  <div class="item" style="--i:11"><span>🎯</span></div>
+</main>
+
+<span id="versao-app" class="versao"></span>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js?v=1"></script>
+<script src="./app.js?v=1"></script>
+</body>
+</html>

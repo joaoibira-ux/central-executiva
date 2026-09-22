@@ -1,4 +1,4 @@
-const VERSION = "central-v2";
+const VERSION = "central-v3";
 const ASSETS = [
   "./index.html",
   "./contatos.html",

@@ -10,7 +10,7 @@ body {
 }
 
 /* ---------- Menu (HUD circular) ---------- */
-.menu-body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.menu-body { display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: env(safe-area-inset-top); }
 .hud { position: relative; width: min(94vw, 560px); aspect-ratio: 1; }
 .anel { position: absolute; border-radius: 50%; border: 1px solid rgba(143, 212, 255, .35); }
 .anel-1 { inset: 0; }
@@ -42,7 +42,8 @@ body {
 
 /* ---------- Telas internas ---------- */
 .topo {
-  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
   background: rgba(4, 11, 28, .92); border-bottom: 1px solid var(--borda); backdrop-filter: blur(6px);
 }
 .topo a { color: var(--azul); text-decoration: none; font-size: 1.4rem; line-height: 1; }

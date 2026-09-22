@@ -96,15 +96,23 @@ input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); fle
 .ver-vazio { color: var(--suave); font-style: italic; }
 
 /* ---------- Aviso: exige instalação na tela de início ---------- */
+/* Sem "width: 100%" nem flex/grid/"margin: 0 auto" centralizando a caixa no
+   celular: testado e confirmado que essa combinação quebra a quebra de linha
+   do texto nesse navegador (o texto vaza para fora da tela em vez de quebrar).
+   "max-width" sozinho, com o texto centralizado por "text-align", funciona e
+   já fica visualmente centralizado o bastante. Em telas largas (desktop),
+   onde a caixa nunca precisa encolher, a centralização por margin é segura. */
 .aviso-instalar {
-  position: fixed; inset: 0; z-index: 999; overflow: auto; display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 999; overflow-y: auto;
   background: radial-gradient(ellipse at 50% 40%, #0b2a5e 0%, var(--fundo) 70%);
-  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
-  text-align: center;
 }
-/* Largura explícita (não só max-width) para forçar o texto a quebrar em telas estreitas
-   em vez de vazar para fora da caixa — flex item sem width não encolhe por conta própria. */
-.aviso-caixa { width: 100%; max-width: 360px; }
+.aviso-caixa {
+  max-width: 360px; box-sizing: border-box; text-align: center;
+  padding: max(15vh, calc(24px + env(safe-area-inset-top))) 24px max(24px, env(safe-area-inset-bottom));
+}
+@media (min-width: 500px) {
+  .aviso-caixa { margin: 0 auto; }
+}
 .aviso-logo { width: 72px; height: 72px; border-radius: 18px; margin-bottom: 16px; box-shadow: 0 0 24px rgba(58, 180, 255, .5); }
 .aviso-caixa h2 { font-size: 1.3rem; margin-bottom: 8px; letter-spacing: .03em; }
 .aviso-caixa p { color: var(--suave); font-size: .9rem; margin-bottom: 16px; line-height: 1.5; }

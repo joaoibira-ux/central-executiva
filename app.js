@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.11";
+const VERSAO_CENTRAL = "1.12";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;

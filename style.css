@@ -36,11 +36,18 @@ body {
 }
 .item span { font-size: clamp(1rem, 5vw, 1.8rem); filter: grayscale(1) brightness(1.7); }
 .item em { display: none; }
-.item.ativo { opacity: 1; background: rgba(58, 180, 255, .3); border-color: var(--azul); box-shadow: 0 0 18px rgba(58, 180, 255, .7); }
-.item.ativo span { filter: none; }
+/* Item ativo vira um "chip" um pouco maior (em vez de círculo) pra caber o
+   nome dentro do próprio botão, empilhado com o ícone — não mais como legenda
+   flutuando embaixo. */
+.item.ativo {
+  opacity: 1; width: 20%; margin: -10% 0 0 -10%; border-radius: 30%;
+  background: rgba(58, 180, 255, .3); border-color: var(--azul); box-shadow: 0 0 18px rgba(58, 180, 255, .7);
+  gap: 1px; padding: 4% 2%;
+}
+.item.ativo span { filter: none; font-size: clamp(.85rem, 3.6vw, 1.4rem); line-height: 1; }
 .item.ativo em {
-  display: block; position: absolute; top: 108%; font-style: normal; font-size: clamp(.6rem, 2.6vw, .8rem);
-  letter-spacing: .05em; text-transform: uppercase; white-space: nowrap;
+  display: block; position: static; font-style: normal; font-size: clamp(.42rem, 1.7vw, .58rem);
+  letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; line-height: 1;
 }
 .item.ativo:active { transform: rotate(calc(var(--i) * 30deg)) translateY(-273%) rotate(calc(var(--i) * -30deg)) scale(.94); }
 .versao { position: fixed; bottom: 8px; width: 100%; text-align: center; font-size: .7rem; color: var(--suave); }

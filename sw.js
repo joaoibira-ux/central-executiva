@@ -1,12 +1,12 @@
-const VERSION = "central-v4";
+const VERSION = "central-v5";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
-  "./style.css?v=2",
+  "./style.css?v=3",
   "./app.js?v=1",
   "./contatos.js?v=1",
-  "./agenda.js?v=1",
+  "./agenda.js?v=2",
   "./firebase-config.js?v=1",
   "./manifest.json",
   "./icone.svg"

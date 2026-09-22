@@ -9,13 +9,35 @@
   <title>Agenda - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
-  <link rel="stylesheet" href="./style.css?v=2" />
+  <link rel="stylesheet" href="./style.css?v=3" />
 </head>
 <body>
 <header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2></header><main class="conteudo">
   <div id="lista"></div>
 </main>
 <button class="fab" id="novo" aria-label="Novo compromisso">+</button>
+
+<div class="modal" id="modal-ver"><div class="caixa">
+  <label class="ver-check"><input type="checkbox" id="ver-feito" /> Concluído</label>
+  <div class="ver-campo" data-campo="titulo"><b id="ver-titulo" class="ver-titulo"></b></div>
+  <div class="ver-campo" data-campo="data">
+    <small>Data e hora</small>
+    <div id="ver-datahora"></div>
+  </div>
+  <div class="ver-campo" data-campo="local">
+    <small>Local</small>
+    <div id="ver-local"></div>
+  </div>
+  <div class="ver-campo" data-campo="obs">
+    <small>Observações</small>
+    <div id="ver-obs"></div>
+  </div>
+  <div class="acoes">
+    <button class="btn sec" id="ver-fechar">Fechar</button>
+    <button class="btn perigo" id="ver-excluir">Excluir</button>
+  </div>
+</div></div>
+
 <div class="modal" id="modal"><div class="caixa">
   <h3 id="modal-titulo">Novo compromisso</h3>
   <label>Título *</label><input id="f-titulo" />
@@ -32,6 +54,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
 <script src="./app.js?v=1"></script>
-<script src="./agenda.js?v=1"></script>
+<script src="./agenda.js?v=2"></script>
 </body>
 </html>

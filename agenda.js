@@ -1,6 +1,7 @@
 const col = colecao("agenda");
 let itens = [];
 let editandoId = null;
+let veiodaVisualizacao = false;
 const $ = id => document.getElementById(id);
 
 function rotuloDia(iso) {
@@ -25,7 +26,24 @@ function render() {
   $("lista").innerHTML = html || `<p class="vazio">Nenhum compromisso.</p>`;
 }
 
-function abrir(i) {
+// ---------- Tela de visualização (somente leitura) ----------
+function visualizar(i) {
+  editandoId = i.id;
+  $("ver-feito").checked = !!i.feito;
+  $("ver-titulo").textContent = i.titulo || "";
+  const [a, m, d] = (i.data || "").split("-");
+  const dataFmt = i.data ? `${d}/${m}/${a}` : "";
+  $("ver-datahora").innerHTML = i.hora
+    ? `${escHtml(dataFmt)} às ${escHtml(i.hora)}`
+    : `${escHtml(dataFmt)}` || `<span class="ver-vazio">Toque para definir</span>`;
+  $("ver-local").innerHTML = i.local ? escHtml(i.local) : `<span class="ver-vazio">Toque para adicionar</span>`;
+  $("ver-obs").innerHTML = i.obs ? escHtml(i.obs).replace(/\n/g, "<br>") : `<span class="ver-vazio">Toque para adicionar</span>`;
+  $("modal-ver").classList.add("aberto");
+}
+const fecharVisualizacao = () => $("modal-ver").classList.remove("aberto");
+
+// ---------- Tela de edição ----------
+function abrir(i, focoCampo) {
   editandoId = i ? i.id : null;
   $("modal-titulo").textContent = i ? "Editar compromisso" : "Novo compromisso";
   $("f-titulo").value = i?.titulo || "";
@@ -35,27 +53,58 @@ function abrir(i) {
   $("f-obs").value = i?.obs || "";
   $("excluir").style.display = i ? "" : "none";
   $("modal").classList.add("aberto");
-  $("f-titulo").focus();
+  const campoParaInput = { titulo: "f-titulo", data: "f-data", local: "f-local", obs: "f-obs" };
+  const alvo = $(campoParaInput[focoCampo] || "f-titulo");
+  alvo.focus();
+  if (alvo.select) alvo.select();
 }
 const fechar = () => $("modal").classList.remove("aberto");
 
-$("novo").onclick = () => abrir(null);
-$("cancelar").onclick = fechar;
+$("novo").onclick = () => { veiodaVisualizacao = false; abrir(null); };
+$("cancelar").onclick = () => { fechar(); if (veiodaVisualizacao) $("modal-ver").classList.add("aberto"); };
+
 $("lista").onclick = e => {
   const chk = e.target.closest("[data-feito]");
   if (chk) { col.salvar(chk.dataset.feito, { feito: chk.checked }); return; }
   const card = e.target.closest(".card");
-  if (card) abrir(itens.find(i => i.id === card.dataset.id));
+  if (card) visualizar(itens.find(i => i.id === card.dataset.id));
 };
+
+// Dentro da visualização: cada campo clicado abre a edição focada nele
+$("modal-ver").querySelectorAll(".ver-campo").forEach(campo => {
+  campo.onclick = () => {
+    veiodaVisualizacao = true;
+    fecharVisualizacao();
+    abrir(itens.find(i => i.id === editandoId), campo.dataset.campo);
+  };
+});
+$("ver-feito").onchange = e => col.salvar(editandoId, { feito: e.target.checked });
+$("ver-fechar").onclick = () => { veiodaVisualizacao = false; fecharVisualizacao(); };
+$("ver-excluir").onclick = async () => {
+  if (confirm("Excluir este compromisso?")) { veiodaVisualizacao = false; await col.remover(editandoId); fecharVisualizacao(); }
+};
+
 $("salvar").onclick = async () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
-  await col.salvar(editandoId, {
-    titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim()
-  });
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim() };
+  await col.salvar(editandoId, dados);
   fechar();
+  if (veiodaVisualizacao) {
+    const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
+    visualizar({ id: editandoId, feito: feitoAtual, ...dados });
+  }
 };
 $("excluir").onclick = async () => {
   if (confirm("Excluir este compromisso?")) { await col.remover(editandoId); fechar(); }
 };
-col.ouvir(l => { itens = l; render(); });
+
+col.ouvir(l => {
+  itens = l;
+  render();
+  // Se a tela de visualização estiver aberta, atualiza com os dados novos (ex.: após salvar)
+  if ($("modal-ver").classList.contains("aberto") && editandoId) {
+    const atual = itens.find(i => i.id === editandoId);
+    if (atual) visualizar(atual); else fecharVisualizacao();
+  }
+});

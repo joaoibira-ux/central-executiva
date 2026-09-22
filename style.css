@@ -84,3 +84,13 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .modal .acoes { display: flex; gap: 8px; margin-top: 16px; }
 .modal .acoes .btn { flex: 1; }
 input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); flex: none; }
+
+/* ---------- Tela de visualização (Agenda) ---------- */
+.ver-check { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--suave); margin-bottom: 4px; }
+.ver-check input { margin: 0; }
+.ver-campo { padding: 12px 4px; border-bottom: 1px solid var(--borda); cursor: pointer; }
+.ver-campo:last-of-type { border-bottom: 0; }
+.ver-campo:active { background: rgba(58, 180, 255, .1); }
+.ver-campo small { display: block; color: var(--suave); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.ver-titulo { display: block; font-size: 1.3rem; line-height: 1.3; }
+.ver-vazio { color: var(--suave); font-style: italic; }

@@ -1,9 +1,9 @@
-const VERSION = "central-v9";
+const VERSION = "central-v10";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
-  "./style.css?v=7",
+  "./style.css?v=8",
   "./app.js?v=3",
   "./contatos.js?v=2",
   "./agenda.js?v=2",

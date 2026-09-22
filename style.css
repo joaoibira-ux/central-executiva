@@ -1,6 +1,6 @@
 :root {
   --fundo: #040b1c; --painel: #0a1a3a; --borda: #1d4a8a; --azul: #3ab4ff;
-  --texto: #e8f2ff; --suave: #8ea9cc; --perigo: #ff5d6c;
+  --azul-claro: #a9def9; --texto: #e8f2ff; --suave: #8ea9cc; --perigo: #ff5d6c;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 /* iPhone em modo standalone (status bar black-translucent) estende a página
@@ -88,7 +88,21 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .modal .caixa { max-width: 560px; max-height: 92vh; overflow: auto; background: var(--fundo); border: 1px solid var(--borda); border-radius: 16px 16px 0 0; padding: 16px; }
 .modal .acoes { display: flex; gap: 8px; margin-top: 16px; }
 .modal .acoes .btn { flex: 1; }
-input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); flex: none; }
+/* Checkbox customizado: nativo dependia do navegador para a cor de "não marcado"
+   (ficava branco). Desenhado à mão para ficar azul clarinho quando vazio e manter
+   o mesmo azul de antes (var(--azul), via accent-color) quando concluído. */
+input[type=checkbox] {
+  -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent;
+  width: 18px; height: 18px; flex: none; margin: 0; border-radius: 5px;
+  background: var(--azul-claro); border: 1px solid var(--borda); cursor: pointer; position: relative;
+}
+input[type=checkbox]:checked {
+  background: var(--azul); border-color: var(--azul); accent-color: var(--azul);
+}
+input[type=checkbox]:checked::after {
+  content: ""; position: absolute; left: 6px; top: 2px; width: 4px; height: 8px;
+  border: solid #04122b; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
 
 /* ---------- Tela de visualização (Agenda) ---------- */
 .ver-check { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--suave); margin-bottom: 4px; }

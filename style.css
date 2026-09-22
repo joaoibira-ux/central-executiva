@@ -107,15 +107,15 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
    o mesmo azul de antes (var(--azul), via accent-color) quando concluído. */
 input[type=checkbox] {
   -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent;
-  width: 18px; height: 18px; flex: none; margin: 0; border-radius: 5px;
+  width: 13px; height: 13px; flex: none; margin: 0; border-radius: 4px;
   background: var(--azul-claro); border: 1px solid var(--borda); cursor: pointer; position: relative;
 }
 input[type=checkbox]:checked {
   background: var(--azul); border-color: var(--azul); accent-color: var(--azul);
 }
 input[type=checkbox]:checked::after {
-  content: ""; position: absolute; left: 6px; top: 2px; width: 4px; height: 8px;
-  border: solid #04122b; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  content: ""; position: absolute; left: 4px; top: 1.5px; width: 3px; height: 6px;
+  border: solid #04122b; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
 }
 
 /* ---------- Tela de visualização (Agenda) ---------- */

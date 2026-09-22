@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.04";
+const VERSAO_CENTRAL = "1.05";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -11,6 +11,49 @@ if (usaFirebase) {
 document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("versao-app");
   if (el) el.textContent = "Versão: " + VERSAO_CENTRAL + (usaFirebase ? "" : " · modo local");
+});
+
+// O sistema só funciona instalado na tela de início — evita uso solto pelo navegador.
+function estaInstalado() {
+  return window.navigator.standalone === true
+    || window.matchMedia("(display-mode: standalone)").matches
+    || window.matchMedia("(display-mode: fullscreen)").matches
+    || window.matchMedia("(display-mode: window-controls-overlay)").matches;
+}
+
+function mostrarAvisoInstalar() {
+  const ua = navigator.userAgent || "";
+  const iOS = /iphone|ipad|ipod/i.test(ua);
+  const android = /android/i.test(ua);
+  const passos = iOS ? [
+    "Toque no ícone de compartilhar (quadrado com seta para cima) na barra do Safari.",
+    "Escolha “Adicionar à Tela de Início”.",
+    "Toque em “Adicionar” no canto superior direito."
+  ] : android ? [
+    "Toque no menu (⋮) no canto do navegador.",
+    "Escolha “Adicionar à tela inicial” ou “Instalar aplicativo”.",
+    "Confirme a instalação."
+  ] : [
+    "Abra este endereço no Chrome ou Edge do computador.",
+    "Clique no ícone de instalar (⊕) na barra de endereço.",
+    "Confirme a instalação do aplicativo."
+  ];
+  const div = document.createElement("div");
+  div.className = "aviso-instalar";
+  div.innerHTML =
+    '<div class="aviso-caixa">' +
+      '<img src="./icone.svg" class="aviso-logo" alt="" />' +
+      "<h2>Instale a Central Executiva</h2>" +
+      "<p>Este sistema só funciona instalado na tela de início do seu aparelho.</p>" +
+      "<ol>" + passos.map(p => "<li>" + escHtml(p) + "</li>").join("") + "</ol>" +
+      '<p class="aviso-rodape">Depois de instalar, abra sempre pelo ícone criado — não pelo navegador.</p>' +
+    "</div>";
+  document.body.appendChild(div);
+  document.body.style.overflow = "hidden";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!estaInstalado()) mostrarAvisoInstalar();
 });
 
 if ("serviceWorker" in navigator) {

@@ -1,6 +1,6 @@
 {
-  "name": "Central Executiva",
-  "short_name": "Central",
+  "name": "CentralExecutiva",
+  "short_name": "CentralExecutiva",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#040b1c",

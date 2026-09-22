@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.10";
+const VERSAO_CENTRAL = "1.11";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -83,10 +83,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).catch(() => {});
+    navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" })
+      .then(reg => {
+        reg.update();
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") reg.update();
+        });
+      })
+      .catch(() => {});
   });
   navigator.serviceWorker.addEventListener("controllerchange", () => window.location.reload());
 }
+
+// Atualização forçada: no iPhone o fluxo padrão de Service Worker (o Safari
+// só rechecar o sw.js de tempos em tempos) demora demais pra pegar versão
+// nova — já ficou "engasgado" numa versão antiga. Em vez de depender só
+// disso, comparamos com um arquivo separado (version.json, sempre buscado
+// sem cache) a cada abertura, ao voltar pro app e periodicamente; se estiver
+// desatualizado, apaga tudo (Service Worker + caches) e recarrega do zero.
+async function verificarVersaoNova() {
+  try {
+    const r = await fetch("./version.json", { cache: "no-store" });
+    const { versao } = await r.json();
+    if (versao && versao !== VERSAO_CENTRAL) {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg => reg.unregister()));
+      }
+      if (window.caches) {
+        const nomes = await caches.keys();
+        await Promise.all(nomes.map(n => caches.delete(n)));
+      }
+      window.location.replace(window.location.pathname + "?atualizado=" + Date.now());
+    }
+  } catch (e) { /* offline ou version.json indisponível no momento — ignora */ }
+}
+document.addEventListener("DOMContentLoaded", verificarVersaoNova);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") verificarVersaoNova();
+});
+setInterval(verificarVersaoNova, 30000);
 
 function escHtml(s) {
   return String(s ?? "")

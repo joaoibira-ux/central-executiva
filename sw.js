@@ -1,11 +1,11 @@
-const VERSION = "central-v11";
+const VERSION = "central-v12";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
   "./importar.html",
   "./style.css?v=8",
-  "./app.js?v=3",
+  "./app.js?v=4",
   "./contatos.js?v=3",
   "./agenda.js?v=2",
   "./importar.js?v=1",
@@ -35,6 +35,7 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
   if (e.request.url.includes("firestore.googleapis.com") || e.request.url.includes("gstatic.com")) return;
+  if (e.request.url.includes("version.json")) return; // sempre rede, nunca cache — usado p/ detectar versão nova
   if (e.request.mode === "navigate") {
     e.respondWith(fetch(e.request).catch(() => caches.match("./index.html")));
     return;

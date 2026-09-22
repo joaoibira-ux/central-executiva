@@ -3,6 +3,11 @@
   --texto: #e8f2ff; --suave: #8ea9cc; --perigo: #ff5d6c;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* iPhone em modo standalone (status bar black-translucent) estende a página
+   por trás da barra de status e do indicador de início — sem fundo no <html>,
+   sobra uma tira branca (fundo padrão do navegador) embaixo, atrás do
+   indicador de início (achado 2026-09-22, logo após ligar black-translucent). */
+html { background: var(--fundo); height: 100%; }
 body {
   font-family: "Segoe UI", system-ui, Arial, sans-serif; color: var(--texto);
   background: radial-gradient(ellipse at 50% 40%, #0b2a5e 0%, var(--fundo) 70%) fixed;

@@ -86,8 +86,18 @@ function rotuloDia(iso) {
   return iso === hoje ? "Hoje · " + base : iso === amanha ? "Amanhã · " + base : base;
 }
 
+// Ao marcar como concluído, o item continua no lugar por 2s (dá tempo de ver o
+// check acontecer) e só então desce pro fim do dia dele na lista.
+const atrasoDescida = new Map(); // id -> setTimeout, enquanto o item ainda não deve "descer"
+
 function render() {
-  const l = [...itens].sort((a, b) => ((a.data || "") + (a.hora || "")).localeCompare((b.data || "") + (b.hora || "")));
+  const l = [...itens].sort((a, b) => {
+    if (a.data !== b.data) return (a.data || "").localeCompare(b.data || "");
+    const feitoA = a.feito && !atrasoDescida.has(a.id);
+    const feitoB = b.feito && !atrasoDescida.has(b.id);
+    if (feitoA !== feitoB) return feitoA ? 1 : -1;
+    return (a.hora || "").localeCompare(b.hora || "");
+  });
   let html = "", diaAtual = "";
   l.forEach(i => {
     if (i.data !== diaAtual) { diaAtual = i.data; html += `<div class="dia">${escHtml(rotuloDia(i.data))}</div>`; }
@@ -144,7 +154,17 @@ $("cancelar").onclick = () => { fechar(); if (veiodaVisualizacao) $("modal-ver")
 
 $("lista").onclick = e => {
   const chk = e.target.closest("[data-feito]");
-  if (chk) { col.salvar(chk.dataset.feito, { feito: chk.checked }); return; }
+  if (chk) {
+    const id = chk.dataset.feito;
+    col.salvar(id, { feito: chk.checked });
+    clearTimeout(atrasoDescida.get(id));
+    if (chk.checked) {
+      atrasoDescida.set(id, setTimeout(() => { atrasoDescida.delete(id); render(); }, 2000));
+    } else {
+      atrasoDescida.delete(id); // desmarcar volta pro lugar na hora, sem atraso
+    }
+    return;
+  }
   const card = e.target.closest(".card");
   if (card) visualizar(itens.find(i => i.id === card.dataset.id));
 };

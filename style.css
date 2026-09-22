@@ -73,6 +73,11 @@ body {
   background: var(--painel); color: var(--texto); font: inherit;
 }
 textarea { min-height: 70px; resize: vertical; }
+/* No iPhone, <input type="date"> e type="time"> têm uma altura própria (por
+   causa do seletor nativo embutido) que não respeita o padding igual aos
+   outros campos, deixando a moldura maior/desalinhada. Força a mesma altura
+   dos demais. */
+input[type="date"], input[type="time"] { height: 43px; padding: 0 12px; }
 label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave); }
 .card {
   background: var(--painel); border: 1px solid var(--borda); border-radius: 12px;

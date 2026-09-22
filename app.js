@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.16";
+const VERSAO_CENTRAL = "1.17";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -99,8 +99,8 @@ if ("serviceWorker" in navigator) {
 // só rechecar o sw.js de tempos em tempos) demora demais pra pegar versão
 // nova — já ficou "engasgado" numa versão antiga. Em vez de depender só
 // disso, comparamos com um arquivo separado (version.json, sempre buscado
-// sem cache) a cada abertura, ao voltar pro app e periodicamente; se estiver
-// desatualizado, apaga tudo (Service Worker + caches) e recarrega do zero.
+// sem cache) a cada abertura e ao voltar pro app; se estiver desatualizado,
+// apaga tudo (Service Worker + caches) e recarrega do zero.
 async function verificarVersaoNova() {
   try {
     const r = await fetch("./version.json", { cache: "no-store" });
@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", verificarVersaoNova);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") verificarVersaoNova();
 });
-setInterval(verificarVersaoNova, 30000);
 
 function escHtml(s) {
   return String(s ?? "")

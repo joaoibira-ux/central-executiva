@@ -16,9 +16,10 @@ hospedagem estática no GitHub Pages + Firestore. Só o modo de operar é replic
 ## Atualização forçada (iPhone demorava demais pra pegar versão nova)
 
 `app.js` compara `VERSAO_CENTRAL` com `version.json` (buscado sempre sem cache) a cada
-abertura, ao voltar pro app e a cada 30s; se diferente, apaga Service Worker + caches e
-recarrega sozinho. `version.json` é excluído do cache do Service Worker (`sw.js`). Por isso
-o passo 2 acima é obrigatório — sem ele o app nunca vai achar que atualizou.
+abertura e ao voltar pro app (sem checagem periódica — o João pediu pra tirar, achava
+desnecessário); se diferente, apaga Service Worker + caches e recarrega sozinho.
+`version.json` é excluído do cache do Service Worker (`sw.js`). Por isso o passo 2 acima é
+obrigatório — sem ele o app nunca vai achar que atualizou.
 
 ## Regras gerais
 

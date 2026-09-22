@@ -95,11 +95,12 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 }
 .modal { position: fixed; inset: 0; z-index: 10; background: rgba(0, 0, 0, .7); display: none; align-items: flex-end; justify-content: center; }
 .modal.aberto { display: flex; }
-/* Sem "width: 100%" aqui — testado e confirmado que essa combinação (junto com
-   "max-width" maior que a tela, caso comum no celular) quebra a quebra de linha
-   de parágrafos longos nesse navegador. app.js ajusta o max-width real em px
-   (sempre menor que a tela) assim que o modal abre — ver ajustarLarguraModal(). */
-.modal .caixa { max-width: 560px; max-height: 92vh; overflow: auto; background: var(--fundo); border: 1px solid var(--borda); border-radius: 16px 16px 0 0; padding: 16px; }
+/* "width: 100%" garante que a caixa preencha toda a largura disponível (sem
+   isso ela encolhe pro conteúdo, deixando sobra dos dois lados, como o João
+   viu no iPhone de verdade em 2026-09-22). app.js ajusta o max-width real em
+   px (sempre menor que a tela) assim que o modal abre, então mesmo com
+   width:100% ela nunca passa da tela — ver ajustarLarguraModal(). */
+.modal .caixa { width: 100%; max-width: 560px; max-height: 92vh; overflow: auto; background: var(--fundo); border: 1px solid var(--borda); border-radius: 16px 16px 0 0; padding: 16px; }
 .modal .acoes { display: flex; gap: 8px; margin-top: 16px; }
 .modal .acoes .btn { flex: 1; }
 /* Checkbox customizado: nativo dependia do navegador para a cor de "não marcado"

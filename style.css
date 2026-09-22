@@ -114,15 +114,15 @@ input[type=checkbox] {
      padding não cabe dentro de 9px, então o navegador estoura o tamanho real
      do elemento pra caber o padding) — foi por isso que o quadradinho ficou
      enorme e a marquinha de check ficou minúscula/deslocada dentro dele. */
-  width: 9px; height: 9px; padding: 0; flex: none; margin: 0; border-radius: 3px;
+  width: 12px; height: 12px; padding: 0; flex: none; margin: 0; border-radius: 4px;
   background: var(--azul-claro); border: 1px solid var(--borda); cursor: pointer; position: relative;
 }
 input[type=checkbox]:checked {
   background: var(--azul); border-color: var(--azul); accent-color: var(--azul);
 }
 input[type=checkbox]:checked::after {
-  content: ""; position: absolute; left: 2.5px; top: 1px; width: 2px; height: 4px;
-  border: solid #04122b; border-width: 0 1px 1px 0; transform: rotate(45deg);
+  content: ""; position: absolute; left: 3.8px; top: 1px; width: 3px; height: 7px;
+  border: solid #04122b; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg);
 }
 
 /* ---------- Tela de visualização (Agenda) ---------- */

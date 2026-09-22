@@ -9,7 +9,7 @@
   <title>Agenda - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
-  <link rel="stylesheet" href="./style.css?v=9" />
+  <link rel="stylesheet" href="./style.css?v=10" />
 </head>
 <body>
 <header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2></header><main class="conteudo">
@@ -32,6 +32,10 @@
     <small>Observações</small>
     <div id="ver-obs"></div>
   </div>
+  <div class="ver-campo" data-campo="anexos">
+    <small>Anexos</small>
+    <div id="ver-anexos"></div>
+  </div>
   <div class="acoes">
     <button class="btn sec" id="ver-fechar">Fechar</button>
     <button class="btn perigo" id="ver-excluir">Excluir</button>
@@ -45,6 +49,10 @@
   <label>Hora</label><input id="f-hora" type="time" />
   <label>Local</label><input id="f-local" />
   <label>Observações</label><textarea id="f-obs"></textarea>
+  <label>Anexos</label>
+  <button type="button" class="btn sec btn-largo" id="escolher-anexo">📎 Adicionar anexo</button>
+  <input type="file" id="f-anexo" accept="image/*,application/pdf" multiple style="display:none" />
+  <div id="f-anexos-lista" class="anexos-lista"></div>
   <div class="acoes">
     <button class="btn sec" id="cancelar">Cancelar</button>
     <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
@@ -54,6 +62,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
 <script src="./app.js?v=4"></script>
-<script src="./agenda.js?v=2"></script>
+<script src="./agenda.js?v=3"></script>
 </body>
 </html>

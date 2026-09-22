@@ -26,5 +26,11 @@ o passo 2 acima é obrigatório — sem ele o app nunca vai achar que atualizou.
 - Credenciais do Firebase em `firebase-config.js`; se vazio, o app roda em modo local (localStorage)
 - Firestore com regras abertas (`allow read, write: if true`), igual ao NATIVA/IBIRÁ
 - Coleções: `contatos`, `agenda`
+- Anexos da Agenda (`agenda.anexos`, array): guardados como base64 embutido no próprio
+  documento, NÃO no Firebase Storage — o Storage passou a exigir plano pago (Blaze) até pra
+  ativar, e o João não quer pagar. Por isso `agenda.js` comprime fotos no navegador (canvas)
+  até ~450KB por arquivo e limita a soma de anexos de um mesmo compromisso a ~900KB (o
+  documento inteiro no Firestore tem limite de ~1MB). Não tentar ativar o Storage de novo
+  sem confirmar com o João.
 - Menu (`index.html`): HUD circular com título CENTRAL EXECUTIVA; ícones ativos = módulos existentes, os demais são decorativos
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

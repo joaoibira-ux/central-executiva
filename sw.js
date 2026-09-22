@@ -1,13 +1,13 @@
-const VERSION = "central-v13";
+const VERSION = "central-v14";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
   "./importar.html",
-  "./style.css?v=9",
+  "./style.css?v=10",
   "./app.js?v=4",
   "./contatos.js?v=3",
-  "./agenda.js?v=2",
+  "./agenda.js?v=3",
   "./importar.js?v=1",
   "./firebase-config.js?v=1",
   "./manifest.json",

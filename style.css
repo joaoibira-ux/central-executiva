@@ -76,9 +76,15 @@ textarea { min-height: 70px; resize: vertical; }
 /* No iPhone, <input type="date"> e type="time"> têm altura E largura próprias
    (por causa do seletor nativo embutido) que não respeitam o mesmo padding/
    width:100% dos outros campos — ficavam mais altos E vazando pra fora da
-   largura da moldura. Força a mesma altura e trava a largura de vez. */
+   largura da moldura. "width:100%; max-width:100%" sozinho não bastou (o
+   Safari trata esses campos como um elemento com largura intrínseca própria,
+   baseada no texto da data/hora formatada, e deixa isso vazar mesmo com
+   width:100%) — "min-width:0" tira esse piso mínimo, e "appearance:none"
+   tira o estilo nativo que carrega esse comportamento (o calendário/relógio
+   continua abrindo ao tocar, só o visual da caixinha fechada que muda). */
 input[type="date"], input[type="time"] {
-  height: 43px; padding: 0 12px; width: 100%; max-width: 100%; box-sizing: border-box;
+  -webkit-appearance: none; appearance: none;
+  height: 43px; padding: 0 12px; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;
 }
 label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave); }
 .card {

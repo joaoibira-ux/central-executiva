@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.07";
+const VERSAO_CENTRAL = "1.08";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -54,6 +54,31 @@ function mostrarAvisoInstalar() {
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!estaInstalado()) mostrarAvisoInstalar();
+});
+
+// Bug de renderização confirmado neste navegador: uma caixa de modal com
+// "max-width" maior que a largura da tela (então nunca chega a restringir,
+// caso comum no celular, onde a tela é sempre menor que os 560px do CSS) faz
+// parágrafos longos vazarem para fora da tela em vez de quebrar a linha. A
+// correção é dar um "max-width" em pixels sempre menor que a tela atual,
+// direto no elemento, assim que o modal abre.
+function ajustarLarguraModal(caixa) {
+  caixa.style.maxWidth = Math.min(560, window.innerWidth - 32) + "px";
+}
+function ajustarModaisAbertos() {
+  document.querySelectorAll(".modal.aberto .caixa").forEach(ajustarLarguraModal);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  new MutationObserver(muts => {
+    muts.forEach(m => {
+      const alvo = m.target;
+      if (alvo.classList.contains("modal") && alvo.classList.contains("aberto")) {
+        const caixa = alvo.querySelector(".caixa");
+        if (caixa) ajustarLarguraModal(caixa);
+      }
+    });
+  }).observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
+  window.addEventListener("resize", ajustarModaisAbertos);
 });
 
 if ("serviceWorker" in navigator) {

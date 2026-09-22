@@ -9,14 +9,33 @@
   <title>Contatos - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
-  <link rel="stylesheet" href="./style.css?v=6" />
+  <link rel="stylesheet" href="./style.css?v=7" />
 </head>
 <body>
 <header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Contatos</h2></header><main class="conteudo">
   <input id="busca" class="busca" type="search" placeholder="Buscar contato..." />
+  <button class="btn sec btn-largo" id="abrir-importar">📇 Importar do iPhone</button>
   <div id="lista"></div>
 </main>
 <button class="fab" id="novo" aria-label="Novo contato">+</button>
+<input type="file" id="arquivo-vcf" accept=".vcf,text/vcard,text/x-vcard,text/x-vcalendar" style="display:none" />
+
+<div class="modal" id="modal-importar"><div class="caixa">
+  <h3>Importar do iPhone</h3>
+  <p class="imp-instrucao">No app Contatos do iPhone: selecione os contatos (ou todos) → Compartilhar → Salvar como vCard/Exportar → escolha "Salvar em Arquivos". Depois toque em "Escolher arquivo .vcf" abaixo e selecione o arquivo salvo.</p>
+  <button class="btn sec btn-largo" id="escolher-vcf">Escolher arquivo .vcf</button>
+  <div id="imp-vazio" class="vazio" style="display:none">Nenhum contato encontrado nesse arquivo.</div>
+  <div id="imp-topo" class="imp-topo" style="display:none">
+    <label class="ver-check"><input type="checkbox" id="imp-marcar-todos" /> Marcar todos</label>
+    <span id="imp-contagem" class="imp-contagem"></span>
+  </div>
+  <div id="imp-lista"></div>
+  <div class="acoes">
+    <button class="btn sec" id="imp-cancelar">Fechar</button>
+    <button class="btn" id="imp-importar" style="display:none">Importar</button>
+  </div>
+</div></div>
+
 <div class="modal" id="modal"><div class="caixa">
   <h3 id="modal-titulo">Novo contato</h3>
   <label>Nome *</label><input id="f-nome" />
@@ -32,7 +51,7 @@
 </div></div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=2"></script>
-<script src="./contatos.js?v=1"></script>
+<script src="./app.js?v=3"></script>
+<script src="./contatos.js?v=2"></script>
 </body>
 </html>

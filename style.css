@@ -74,13 +74,18 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .btn.sec { background: transparent; color: var(--texto); border: 1px solid var(--borda); }
 .btn.perigo { background: var(--perigo); color: #fff; }
 .btn.mini { padding: 6px 10px; font-size: .85rem; }
+.btn-largo { width: 100%; margin-top: 10px; }
 .fab {
   position: fixed; right: 18px; bottom: 22px; width: 56px; height: 56px; border-radius: 50%; border: 0;
   background: var(--azul); color: #021227; font-size: 2rem; box-shadow: 0 0 20px rgba(58, 180, 255, .6); cursor: pointer;
 }
 .modal { position: fixed; inset: 0; z-index: 10; background: rgba(0, 0, 0, .7); display: none; align-items: flex-end; justify-content: center; }
 .modal.aberto { display: flex; }
-.modal .caixa { width: 100%; max-width: 560px; max-height: 92vh; overflow: auto; background: var(--fundo); border: 1px solid var(--borda); border-radius: 16px 16px 0 0; padding: 16px; }
+/* Sem "width: 100%" aqui — testado e confirmado que essa combinação (junto com
+   "max-width" maior que a tela, caso comum no celular) quebra a quebra de linha
+   de parágrafos longos nesse navegador. app.js ajusta o max-width real em px
+   (sempre menor que a tela) assim que o modal abre — ver ajustarLarguraModal(). */
+.modal .caixa { max-width: 560px; max-height: 92vh; overflow: auto; background: var(--fundo); border: 1px solid var(--borda); border-radius: 16px 16px 0 0; padding: 16px; }
 .modal .acoes { display: flex; gap: 8px; margin-top: 16px; }
 .modal .acoes .btn { flex: 1; }
 input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); flex: none; }
@@ -94,6 +99,13 @@ input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); fle
 .ver-campo small { display: block; color: var(--suave); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 .ver-titulo { display: block; font-size: 1.3rem; line-height: 1.3; }
 .ver-vazio { color: var(--suave); font-style: italic; }
+
+/* ---------- Importar contatos do iPhone (.vcf) ---------- */
+.imp-instrucao { font-size: .85rem; color: var(--suave); line-height: 1.5; margin: 10px 0; }
+.imp-topo { display: flex; align-items: center; justify-content: space-between; margin: 14px 0 4px; }
+.imp-contagem { font-size: .8rem; color: var(--suave); }
+.imp-item { cursor: pointer; }
+.imp-duplicado { color: var(--perigo) !important; }
 
 /* ---------- Aviso: exige instalação na tela de início ---------- */
 /* Sem "width: 100%" nem flex/grid/"margin: 0 auto" centralizando a caixa no

@@ -97,12 +97,14 @@ input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--azul); fle
 
 /* ---------- Aviso: exige instalação na tela de início ---------- */
 .aviso-instalar {
-  position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 999; overflow: auto; display: flex; align-items: center; justify-content: center;
   background: radial-gradient(ellipse at 50% 40%, #0b2a5e 0%, var(--fundo) 70%);
   padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
   text-align: center;
 }
-.aviso-caixa { max-width: 360px; }
+/* Largura explícita (não só max-width) para forçar o texto a quebrar em telas estreitas
+   em vez de vazar para fora da caixa — flex item sem width não encolhe por conta própria. */
+.aviso-caixa { width: 100%; max-width: 360px; }
 .aviso-logo { width: 72px; height: 72px; border-radius: 18px; margin-bottom: 16px; box-shadow: 0 0 24px rgba(58, 180, 255, .5); }
 .aviso-caixa h2 { font-size: 1.3rem; margin-bottom: 8px; letter-spacing: .03em; }
 .aviso-caixa p { color: var(--suave); font-size: .9rem; margin-bottom: 16px; line-height: 1.5; }

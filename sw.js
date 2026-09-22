@@ -1,11 +1,11 @@
-const VERSION = "central-v20";
+const VERSION = "central-v21";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
   "./importar.html",
-  "./style.css?v=15",
-  "./app.js?v=7",
+  "./style.css?v=16",
+  "./app.js?v=8",
   "./contatos.js?v=3",
   "./agenda.js?v=3",
   "./importar.js?v=1",

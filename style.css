@@ -108,7 +108,13 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
    o mesmo azul de antes (var(--azul), via accent-color) quando concluído. */
 input[type=checkbox] {
   -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent;
-  width: 9px; height: 9px; flex: none; margin: 0; border-radius: 3px;
+  /* padding:0 é essencial aqui — a regra genérica ".busca, input, textarea, select"
+     (mais acima) põe padding:11px 12px em todo <input>, e como isso não é
+     sobrescrito, ele "infla" a caixa pra muito além dos 9px declarados (o
+     padding não cabe dentro de 9px, então o navegador estoura o tamanho real
+     do elemento pra caber o padding) — foi por isso que o quadradinho ficou
+     enorme e a marquinha de check ficou minúscula/deslocada dentro dele. */
+  width: 9px; height: 9px; padding: 0; flex: none; margin: 0; border-radius: 3px;
   background: var(--azul-claro); border: 1px solid var(--borda); cursor: pointer; position: relative;
 }
 input[type=checkbox]:checked {

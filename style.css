@@ -86,7 +86,7 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .card .info { flex: 1; min-width: 0; }
 .card .info b { display: block; }
 .card .info small { color: var(--suave); display: block; overflow: hidden; text-overflow: ellipsis; }
-.card.feito .info { opacity: .5; text-decoration: line-through; }
+.card.feito .info { opacity: .78; text-decoration: line-through; }
 .dia { margin-top: 18px; font-size: .8rem; color: var(--azul); text-transform: uppercase; letter-spacing: .08em; }
 .vazio { text-align: center; color: var(--suave); margin-top: 40px; }
 .btn { border: 0; border-radius: 10px; padding: 10px 14px; font: inherit; cursor: pointer; background: var(--azul); color: #021227; font-weight: 600; text-decoration: none; }
@@ -126,8 +126,8 @@ input[type=checkbox]:checked {
   background: var(--azul); border-color: var(--azul); accent-color: var(--azul);
 }
 input[type=checkbox]:checked::after {
-  content: ""; position: absolute; left: 3.8px; top: 1px; width: 3px; height: 7px;
-  border: solid #04122b; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg);
+  content: ""; position: absolute; left: 3.6px; top: 0.5px; width: 3px; height: 7px;
+  border: solid #04122b; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg);
 }
 
 /* ---------- Tela de visualização (Agenda) ---------- */

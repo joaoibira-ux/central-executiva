@@ -32,10 +32,16 @@ obrigatório — sem ele o app nunca vai achar que atualizou.
   (aniversários/reuniões/feriados/eventos recorrentes — campos nome/dia/mes/tipo
   "aniversario"|"reuniao"|"feriado"|"evento"|"outro"/obs/contatoId; SEM ano, porque repete
   todo ano; `datas.js` calcula a próxima ocorrência a partir de dia+mês)
-- Vínculo Datas↔Contatos (2026-09-24): em "Datas importantes" dá pra vincular a um contato
-  existente — se o contato já tem aniversário salvo, a data é puxada de lá; se não tem (e o
-  tipo é aniversário), salvar a data ali também grava em `contatos.aniversarioDia/Mes`
-  (sincronização automática nos dois sentidos, sem perguntar). `contatos.html?abrir=ID` abre
+- Vínculo Datas↔Contatos (2026-09-24): totalmente bidirecional, sem perguntar.
+  De Datas→Contatos: em "Datas importantes" dá pra vincular a um contato existente — se ele já
+  tem aniversário salvo, a data é puxada de lá; se não tem (e o tipo é aniversário), salvar a
+  data ali também grava em `contatos.aniversarioDia/Mes`.
+  De Contatos→Datas: preencher/editar o campo Aniversário em Contatos cria (ou atualiza, se já
+  existir — acha pelo `contatoId`) um item "Aniversário de <nome>" em `datasImportantes`
+  automaticamente. Limite conhecido: apagar o aniversário em Contatos NÃO apaga o item já
+  criado em Datas (decisão deliberada, pra não arriscar excluir algo que o usuário customizou
+  lá — precisa apagar manualmente em Datas se for o caso).
+  `contatos.html?abrir=ID` abre
   direto um contato (usado pelo link "Ver contato" na tela de Datas).
 - Anexos da Agenda (`agenda.anexos`, array): guardados como base64 embutido no próprio
   documento, NÃO no Firebase Storage — o Storage passou a exigir plano pago (Blaze) até pra

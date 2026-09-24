@@ -1,5 +1,7 @@
 const col = colecao("contatos");
+const colDatas = colecao("datasImportantes");
 let contatos = [];
+let datasImportantes = [];
 let editandoId = null;
 const $ = id => document.getElementById(id);
 
@@ -52,11 +54,23 @@ $("salvar").onclick = async () => {
   if (!nome) { alert("Informe o nome."); return; }
   const aniversario = $("f-aniversario").value; // "AAAA-MM-DD" ou vazio
   const [, mes, dia] = aniversario ? aniversario.split("-").map(Number) : [null, null, null];
-  await col.salvar(editandoId, {
+  const ref = await col.salvar(editandoId, {
     nome, telefone: $("f-tel").value.trim(), email: $("f-email").value.trim(),
     empresa: $("f-empresa").value.trim(), obs: $("f-obs").value.trim(),
     aniversarioDia: dia || null, aniversarioMes: mes || null
   });
+  // Aniversário preenchido aqui também aparece em Datas importantes — cria ou
+  // atualiza o item vinculado a este contato, sem precisar fazer nada lá.
+  if (dia && mes) {
+    const idContato = editandoId || ref?.id;
+    if (idContato) {
+      const existente = datasImportantes.find(d => d.contatoId === idContato && d.tipo === "aniversario");
+      await colDatas.salvar(existente?.id || null, {
+        nome: "Aniversário de " + nome, dia, mes, tipo: "aniversario",
+        obs: existente?.obs || "", contatoId: idContato
+      });
+    }
+  }
   fechar();
 };
 $("excluir").onclick = async () => {
@@ -73,3 +87,4 @@ col.ouvir(l => {
     if (alvo) { abrir(alvo); history.replaceState(null, "", location.pathname); }
   }
 });
+colDatas.ouvir(l => { datasImportantes = l; });

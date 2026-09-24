@@ -7,35 +7,31 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
   <meta name="theme-color" content="#040b1c" />
-  <title>Agenda - Central Executiva</title>
+  <title>Datas importantes - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
   <link rel="stylesheet" href="./style.css?v=21" />
 </head>
 <body>
-<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2></header><main class="conteudo">
+<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Datas importantes</h2></header>
+<main class="conteudo">
   <div id="lista"></div>
 </main>
-<button class="fab" id="novo" aria-label="Novo compromisso">+</button>
+<button class="fab" id="novo" aria-label="Nova data">+</button>
 
 <div class="modal" id="modal-ver"><div class="caixa">
-  <label class="ver-check"><input type="checkbox" id="ver-feito" /> Concluído</label>
-  <div class="ver-campo" data-campo="titulo"><b id="ver-titulo" class="ver-titulo"></b></div>
+  <div class="ver-campo" data-campo="nome"><b id="ver-nome" class="ver-titulo"></b></div>
   <div class="ver-campo" data-campo="data">
-    <small>Data e hora</small>
-    <div id="ver-datahora"></div>
+    <small>Data (todo ano)</small>
+    <div id="ver-data"></div>
   </div>
-  <div class="ver-campo" data-campo="local">
-    <small>Local</small>
-    <div id="ver-local"></div>
+  <div class="ver-campo" data-campo="tipo">
+    <small>Tipo</small>
+    <div id="ver-tipo"></div>
   </div>
   <div class="ver-campo" data-campo="obs">
     <small>Observações</small>
     <div id="ver-obs"></div>
-  </div>
-  <div class="ver-campo" data-campo="anexos">
-    <small>Anexos</small>
-    <div id="ver-anexos"></div>
   </div>
   <div class="acoes">
     <button class="btn sec" id="ver-fechar">Fechar</button>
@@ -44,16 +40,16 @@
 </div></div>
 
 <div class="modal" id="modal"><div class="caixa">
-  <h3 id="modal-titulo">Novo compromisso</h3>
-  <label>Título *</label><input id="f-titulo" />
-  <label>Data *</label><input id="f-data" type="date" />
-  <label>Hora</label><input id="f-hora" type="time" />
-  <label>Local</label><input id="f-local" />
+  <h3 id="modal-titulo">Nova data</h3>
+  <label>Nome *</label><input id="f-nome" placeholder="Ex.: Aniversário da Maria" />
+  <label>Dia e mês *</label><input id="f-data" type="date" />
+  <label>Tipo</label>
+  <select id="f-tipo">
+    <option value="aniversario">🎂 Aniversário</option>
+    <option value="feriado">🎉 Feriado</option>
+    <option value="evento">📌 Evento</option>
+  </select>
   <label>Observações</label><textarea id="f-obs"></textarea>
-  <label>Anexos</label>
-  <button type="button" class="btn sec btn-largo" id="escolher-anexo">📎 Adicionar anexo</button>
-  <input type="file" id="f-anexo" accept="image/*,application/pdf" multiple style="display:none" />
-  <div id="f-anexos-lista" class="anexos-lista"></div>
   <div class="acoes">
     <button class="btn sec" id="cancelar">Cancelar</button>
     <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
@@ -63,6 +59,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
 <script src="./app.js?v=16"></script>
-<script src="./agenda.js?v=4"></script>
+<script src="./datas.js?v=1"></script>
 </body>
 </html>

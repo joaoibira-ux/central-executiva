@@ -7,35 +7,25 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
   <meta name="theme-color" content="#040b1c" />
-  <title>Agenda - Central Executiva</title>
+  <title>Desenvolvimento - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
   <link rel="stylesheet" href="./style.css?v=21" />
 </head>
 <body>
-<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2></header><main class="conteudo">
+<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Desenvolvimento</h2></header>
+<main class="conteudo">
+  <p class="imp-instrucao">Lista de pendências e ideias para o sistema — o que ainda falta ajustar, criar ou corrigir.</p>
   <div id="lista"></div>
 </main>
-<button class="fab" id="novo" aria-label="Novo compromisso">+</button>
+<button class="fab" id="novo" aria-label="Novo item">+</button>
 
 <div class="modal" id="modal-ver"><div class="caixa">
   <label class="ver-check"><input type="checkbox" id="ver-feito" /> Concluído</label>
-  <div class="ver-campo" data-campo="titulo"><b id="ver-titulo" class="ver-titulo"></b></div>
-  <div class="ver-campo" data-campo="data">
-    <small>Data e hora</small>
-    <div id="ver-datahora"></div>
-  </div>
-  <div class="ver-campo" data-campo="local">
-    <small>Local</small>
-    <div id="ver-local"></div>
-  </div>
-  <div class="ver-campo" data-campo="obs">
-    <small>Observações</small>
-    <div id="ver-obs"></div>
-  </div>
-  <div class="ver-campo" data-campo="anexos">
-    <small>Anexos</small>
-    <div id="ver-anexos"></div>
+  <div class="ver-campo" data-campo="texto"><b id="ver-texto" class="ver-titulo"></b></div>
+  <div class="ver-campo" data-campo="nota">
+    <small>Nota de conclusão</small>
+    <div id="ver-nota"></div>
   </div>
   <div class="acoes">
     <button class="btn sec" id="ver-fechar">Fechar</button>
@@ -44,16 +34,9 @@
 </div></div>
 
 <div class="modal" id="modal"><div class="caixa">
-  <h3 id="modal-titulo">Novo compromisso</h3>
-  <label>Título *</label><input id="f-titulo" />
-  <label>Data *</label><input id="f-data" type="date" />
-  <label>Hora</label><input id="f-hora" type="time" />
-  <label>Local</label><input id="f-local" />
-  <label>Observações</label><textarea id="f-obs"></textarea>
-  <label>Anexos</label>
-  <button type="button" class="btn sec btn-largo" id="escolher-anexo">📎 Adicionar anexo</button>
-  <input type="file" id="f-anexo" accept="image/*,application/pdf" multiple style="display:none" />
-  <div id="f-anexos-lista" class="anexos-lista"></div>
+  <h3 id="modal-titulo">Novo item</h3>
+  <label>Descrição *</label><textarea id="f-texto"></textarea>
+  <label>Nota de conclusão</label><textarea id="f-nota"></textarea>
   <div class="acoes">
     <button class="btn sec" id="cancelar">Cancelar</button>
     <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
@@ -63,6 +46,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
 <script src="./app.js?v=16"></script>
-<script src="./agenda.js?v=4"></script>
+<script src="./desenvolvimento.js?v=1"></script>
 </body>
 </html>

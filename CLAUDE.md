@@ -26,7 +26,11 @@ obrigatório — sem ele o app nunca vai achar que atualizou.
 - Arquivos do site ficam na raiz do repositório
 - Credenciais do Firebase em `firebase-config.js`; se vazio, o app roda em modo local (localStorage)
 - Firestore com regras abertas (`allow read, write: if true`), igual ao NATIVA/IBIRÁ
-- Coleções: `contatos`, `agenda`
+- Coleções: `contatos`, `agenda`, `desenvolvimento` (backlog do próprio sistema, mesmo padrão
+  do NATIVA/GW: campos texto/status "aberto"|"concluido"/criadoEm/concluidoEm/notaConclusao),
+  `datasImportantes` (aniversários/feriados/eventos recorrentes — campos nome/dia/mes/tipo
+  "aniversario"|"feriado"|"evento"/obs; SEM ano, porque repete todo ano; `datas.js` calcula a
+  próxima ocorrência a partir de dia+mês)
 - Anexos da Agenda (`agenda.anexos`, array): guardados como base64 embutido no próprio
   documento, NÃO no Firebase Storage — o Storage passou a exigir plano pago (Blaze) até pra
   ativar, e o João não quer pagar. Por isso `agenda.js` comprime fotos no navegador (canvas)

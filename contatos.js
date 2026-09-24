@@ -3,6 +3,11 @@ let contatos = [];
 let editandoId = null;
 const $ = id => document.getElementById(id);
 
+function fmtAniversario(c) {
+  if (!c.aniversarioDia || !c.aniversarioMes) return "";
+  return "🎂 " + String(c.aniversarioDia).padStart(2, "0") + "/" + String(c.aniversarioMes).padStart(2, "0");
+}
+
 function render() {
   const q = $("busca").value.trim().toLowerCase();
   const l = contatos
@@ -12,7 +17,7 @@ function render() {
     const fone = (c.telefone || "").replace(/\D/g, "");
     return `<div class="card" data-id="${c.id}">
       <div class="info"><b>${escHtml(c.nome)}</b>
-        <small>${escHtml([c.empresa, c.telefone, c.email].filter(Boolean).join(" · "))}</small></div>
+        <small>${escHtml([c.empresa, c.telefone, c.email, fmtAniversario(c)].filter(Boolean).join(" · "))}</small></div>
       ${fone ? `<a class="btn mini" href="https://wa.me/55${fone}" target="_blank" rel="noopener" onclick="event.stopPropagation()">WhatsApp</a>` : ""}
     </div>`;
   }).join("") : `<p class="vazio">Nenhum contato.</p>`;
@@ -25,6 +30,9 @@ function abrir(c) {
   $("f-tel").value = c?.telefone || "";
   $("f-email").value = c?.email || "";
   $("f-empresa").value = c?.empresa || "";
+  // Ano é só um valor fixo pra caber no <input type="date"> — só dia/mês importam.
+  $("f-aniversario").value = (c?.aniversarioDia && c?.aniversarioMes)
+    ? ("2024-" + String(c.aniversarioMes).padStart(2, "0") + "-" + String(c.aniversarioDia).padStart(2, "0")) : "";
   $("f-obs").value = c?.obs || "";
   $("excluir").style.display = c ? "" : "none";
   $("modal").classList.add("aberto");
@@ -42,13 +50,26 @@ $("lista").onclick = e => {
 $("salvar").onclick = async () => {
   const nome = $("f-nome").value.trim();
   if (!nome) { alert("Informe o nome."); return; }
+  const aniversario = $("f-aniversario").value; // "AAAA-MM-DD" ou vazio
+  const [, mes, dia] = aniversario ? aniversario.split("-").map(Number) : [null, null, null];
   await col.salvar(editandoId, {
     nome, telefone: $("f-tel").value.trim(), email: $("f-email").value.trim(),
-    empresa: $("f-empresa").value.trim(), obs: $("f-obs").value.trim()
+    empresa: $("f-empresa").value.trim(), obs: $("f-obs").value.trim(),
+    aniversarioDia: dia || null, aniversarioMes: mes || null
   });
   fechar();
 };
 $("excluir").onclick = async () => {
   if (confirm("Excluir este contato?")) { await col.remover(editandoId); fechar(); }
 };
-col.ouvir(l => { contatos = l; render(); });
+
+// Link direto de outra tela (ex.: Datas importantes → "Ver contato"): contatos.html?abrir=ID
+col.ouvir(l => {
+  contatos = l;
+  render();
+  const idAbrir = new URLSearchParams(location.search).get("abrir");
+  if (idAbrir) {
+    const alvo = contatos.find(c => c.id === idAbrir);
+    if (alvo) { abrir(alvo); history.replaceState(null, "", location.pathname); }
+  }
+});

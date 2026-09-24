@@ -29,6 +29,10 @@
     <small>Tipo</small>
     <div id="ver-tipo"></div>
   </div>
+  <div class="ver-campo" data-campo="contato">
+    <small>Contato vinculado</small>
+    <div id="ver-contato"></div>
+  </div>
   <div class="ver-campo" data-campo="obs">
     <small>Observações</small>
     <div id="ver-obs"></div>
@@ -46,19 +50,33 @@
   <label>Tipo</label>
   <select id="f-tipo">
     <option value="aniversario">🎂 Aniversário</option>
+    <option value="reuniao">🤝 Reunião</option>
     <option value="feriado">🎉 Feriado</option>
     <option value="evento">📌 Evento</option>
+    <option value="outro">📎 Outro</option>
   </select>
+  <label>Contato vinculado</label>
+  <button type="button" class="btn sec btn-largo" id="escolher-contato">👤 Vincular a um contato</button>
+  <div id="f-contato-vinculado" class="anexos-lista"></div>
   <label>Observações</label><textarea id="f-obs"></textarea>
   <div class="acoes">
     <button class="btn sec" id="cancelar">Cancelar</button>
     <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
     <button class="btn" id="salvar">Salvar</button>
   </div>
+</div></div>
+
+<div class="modal" id="modal-contato"><div class="caixa">
+  <h3>Vincular a um contato</h3>
+  <input id="busca-contato" class="busca" type="search" placeholder="Buscar contato..." />
+  <div id="lista-contato"></div>
+  <div class="acoes">
+    <button class="btn sec" id="contato-cancelar">Cancelar</button>
+  </div>
 </div></div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=16"></script>
-<script src="./datas.js?v=1"></script>
+<script src="./app.js?v=17"></script>
+<script src="./datas.js?v=2"></script>
 </body>
 </html>

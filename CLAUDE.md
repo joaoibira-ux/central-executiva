@@ -26,11 +26,17 @@ obrigatório — sem ele o app nunca vai achar que atualizou.
 - Arquivos do site ficam na raiz do repositório
 - Credenciais do Firebase em `firebase-config.js`; se vazio, o app roda em modo local (localStorage)
 - Firestore com regras abertas (`allow read, write: if true`), igual ao NATIVA/IBIRÁ
-- Coleções: `contatos`, `agenda`, `desenvolvimento` (backlog do próprio sistema, mesmo padrão
-  do NATIVA/GW: campos texto/status "aberto"|"concluido"/criadoEm/concluidoEm/notaConclusao),
-  `datasImportantes` (aniversários/feriados/eventos recorrentes — campos nome/dia/mes/tipo
-  "aniversario"|"feriado"|"evento"/obs; SEM ano, porque repete todo ano; `datas.js` calcula a
-  próxima ocorrência a partir de dia+mês)
+- Coleções: `contatos` (agora com `aniversarioDia`/`aniversarioMes` opcionais), `agenda`,
+  `desenvolvimento` (backlog do próprio sistema, mesmo padrão do NATIVA/GW: campos
+  texto/status "aberto"|"concluido"/criadoEm/concluidoEm/notaConclusao), `datasImportantes`
+  (aniversários/reuniões/feriados/eventos recorrentes — campos nome/dia/mes/tipo
+  "aniversario"|"reuniao"|"feriado"|"evento"|"outro"/obs/contatoId; SEM ano, porque repete
+  todo ano; `datas.js` calcula a próxima ocorrência a partir de dia+mês)
+- Vínculo Datas↔Contatos (2026-09-24): em "Datas importantes" dá pra vincular a um contato
+  existente — se o contato já tem aniversário salvo, a data é puxada de lá; se não tem (e o
+  tipo é aniversário), salvar a data ali também grava em `contatos.aniversarioDia/Mes`
+  (sincronização automática nos dois sentidos, sem perguntar). `contatos.html?abrir=ID` abre
+  direto um contato (usado pelo link "Ver contato" na tela de Datas).
 - Anexos da Agenda (`agenda.anexos`, array): guardados como base64 embutido no próprio
   documento, NÃO no Firebase Storage — o Storage passou a exigir plano pago (Blaze) até pra
   ativar, e o João não quer pagar. Por isso `agenda.js` comprime fotos no navegador (canvas)

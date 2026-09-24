@@ -43,6 +43,15 @@ obrigatório — sem ele o app nunca vai achar que atualizou.
   lá — precisa apagar manualmente em Datas se for o caso).
   `contatos.html?abrir=ID` abre
   direto um contato (usado pelo link "Ver contato" na tela de Datas).
+- Lembrete de parabéns (2026-09-24): NÃO envia mensagem sozinho — o João preferiu revisar
+  antes de mandar (decisão explícita, ver conversa). Em "Datas importantes", um item de
+  aniversário que caia hoje e tenha contato vinculado com telefone ganha destaque visual
+  (`.card.hoje`) e um botão "🎉 Parabéns" que abre o WhatsApp com mensagem padrão já escrita
+  ("Feliz aniversário, {primeiro nome}! 🎉🎂 ...") — só falta o João tocar em enviar. O menu
+  principal (`index.html`) também mostra um aviso no topo quando há qualquer data importante
+  hoje (não só aniversário), linkando pra tela de Datas. Nunca trocar isso por envio automático
+  de verdade sem o João pedir de novo — ele já escolheu explicitamente essa opção mais segura
+  em vez de usar a Evolution API da VM pra mandar sozinho.
 - Anexos da Agenda (`agenda.anexos`, array): guardados como base64 embutido no próprio
   documento, NÃO no Firebase Storage — o Storage passou a exigir plano pago (Blaze) até pra
   ativar, e o João não quer pagar. Por isso `agenda.js` comprime fotos no navegador (canvas)

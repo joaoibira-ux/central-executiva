@@ -33,6 +33,18 @@ function fmtDiaMes(dia, mes) {
   return String(dia).padStart(2, "0") + "/" + String(mes).padStart(2, "0");
 }
 
+// Lembrete de parabéns: não é enviado sozinho (o João prefere revisar antes) —
+// monta um link do WhatsApp já com a mensagem pronta, só falta tocar em enviar.
+function linkParabens(i) {
+  if (i.tipo !== "aniversario") return "";
+  const contato = i.contatoId ? contatos.find(c => c.id === i.contatoId) : null;
+  const fone = contato?.telefone ? contato.telefone.replace(/\D/g, "") : "";
+  if (!fone) return "";
+  const primeiroNome = (contato.nome || i.nome).split(" ")[0];
+  const msg = encodeURIComponent(`Feliz aniversário, ${primeiroNome}! 🎉🎂 Que seu dia seja incrível!`);
+  return `https://wa.me/55${fone}?text=${msg}`;
+}
+
 function render() {
   const l = itens
     .map(i => ({ ...i, _proxima: proximaOcorrencia(i.dia, i.mes) }))
@@ -41,9 +53,12 @@ function render() {
   l.forEach(i => {
     const mesRotulo = NOMES_MES[i._proxima.getMonth()];
     if (mesRotulo !== mesAtual) { mesAtual = mesRotulo; html += `<div class="dia">${mesRotulo}</div>`; }
-    html += `<div class="card" data-id="${i.id}">
+    const ehHoje = rotuloContagem(i._proxima) === "Hoje!";
+    const link = ehHoje ? linkParabens(i) : "";
+    html += `<div class="card ${ehHoje ? "hoje" : ""}" data-id="${i.id}">
       <div class="info"><b>${ICONE_TIPO[i.tipo] || "📌"} ${escHtml(i.nome)}</b>
         <small>${fmtDiaMes(i.dia, i.mes)} · ${rotuloContagem(i._proxima)}</small></div>
+      ${link ? `<a class="btn mini" href="${link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🎉 Parabéns</a>` : ""}
     </div>`;
   });
   $("lista").innerHTML = html || `<p class="vazio">Nenhuma data cadastrada.</p>`;
@@ -60,6 +75,10 @@ function visualizar(i) {
     ? `<a href="contatos.html?abrir=${contato.id}" class="anexo-item" onclick="event.stopPropagation()">👤 ${escHtml(contato.nome)}</a>`
     : `<span class="ver-vazio">Toque para adicionar</span>`;
   $("ver-obs").innerHTML = i.obs ? escHtml(i.obs).replace(/\n/g, "<br>") : `<span class="ver-vazio">Toque para adicionar</span>`;
+  const ehHoje = rotuloContagem(proximaOcorrencia(i.dia, i.mes)) === "Hoje!";
+  const linkHoje = ehHoje ? linkParabens(i) : "";
+  $("ver-parabens").style.display = linkHoje ? "" : "none";
+  $("ver-parabens").href = linkHoje || "#";
   $("modal-ver").classList.add("aberto");
 }
 const fecharVisualizacao = () => $("modal-ver").classList.remove("aberto");
@@ -176,12 +195,15 @@ $("excluir").onclick = async () => {
   if (confirm("Excluir esta data?")) { await col.remover(editandoId); fechar(); }
 };
 
-col.ouvir(l => {
-  itens = l;
+function atualizarTelaAtual() {
   render();
   if ($("modal-ver").classList.contains("aberto") && editandoId) {
     const atual = itens.find(i => i.id === editandoId);
     if (atual) visualizar(atual); else fecharVisualizacao();
   }
-});
-colContatos.ouvir(l => { contatos = l; });
+}
+col.ouvir(l => { itens = l; atualizarTelaAtual(); });
+// Sem isso, o botão de "Parabéns" (que depende do telefone do contato vinculado)
+// só apareceria depois de algum outro evento redesenhar a lista — os contatos
+// costumam carregar depois das datas, então precisa recalcular aqui também.
+colContatos.ouvir(l => { contatos = l; atualizarTelaAtual(); });

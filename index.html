@@ -10,9 +10,11 @@
   <title>Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
-  <link rel="stylesheet" href="./style.css?v=21" />
+  <link rel="stylesheet" href="./style.css?v=22" />
 </head>
 <body class="menu-body">
+
+<a id="aviso-datas" class="aviso-datas" href="./datas.html" style="display:none"></a>
 
 <main class="hud">
   <div class="anel anel-1"></div>
@@ -40,6 +42,25 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=18"></script>
+<script src="./app.js?v=19"></script>
+<script>
+// Aviso de data importante hoje (aniversário, feriado, evento...) — só um lembrete,
+// não envia nada sozinho. Some se não houver colecao() (ex.: sem Firebase configurado
+// e sem localStorage ainda populado — nesse caso a lista vem vazia, sem erro).
+if (typeof colecao === "function") {
+  colecao("datasImportantes").ouvir(lista => {
+    const hoje = new Date();
+    const hojes = lista.filter(i => i.dia === hoje.getDate() && i.mes === hoje.getMonth() + 1);
+    const el = document.getElementById("aviso-datas");
+    if (hojes.length) {
+      const icone = { aniversario: "🎂", reuniao: "🤝", feriado: "🎉", evento: "📌", outro: "📎" };
+      el.textContent = hojes.map(i => (icone[i.tipo] || "📌") + " " + i.nome).join(" · ") + " — hoje!";
+      el.style.display = "flex";
+    } else {
+      el.style.display = "none";
+    }
+  });
+}
+</script>
 </body>
 </html>

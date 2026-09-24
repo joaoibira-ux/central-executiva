@@ -95,6 +95,16 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .card .info b { display: block; }
 .card .info small { color: var(--suave); display: block; overflow: hidden; text-overflow: ellipsis; }
 .card.feito .info { opacity: .78; text-decoration: line-through; }
+.card.hoje { border-color: var(--azul); box-shadow: 0 0 12px rgba(58, 180, 255, .35); }
+
+/* Aviso de data importante hoje, no menu principal */
+.aviso-datas {
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  z-index: 5; display: flex; align-items: center; gap: 6px; max-width: min(88vw, 380px);
+  background: rgba(58, 180, 255, .18); border: 1px solid var(--azul); border-radius: 999px;
+  padding: 8px 16px; color: var(--texto); text-decoration: none; font-size: .8rem;
+  box-shadow: 0 0 14px rgba(58, 180, 255, .35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .dia { margin-top: 18px; font-size: .8rem; color: var(--azul); text-transform: uppercase; letter-spacing: .08em; }
 .vazio { text-align: center; color: var(--suave); margin-top: 40px; }
 .btn { border: 0; border-radius: 10px; padding: 10px 14px; font: inherit; cursor: pointer; background: var(--azul); color: #021227; font-weight: 600; text-decoration: none; }

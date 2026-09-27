@@ -10,7 +10,7 @@
   <title>Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
-  <link rel="stylesheet" href="./style.css?v=22" />
+  <link rel="stylesheet" href="./style.css?v=23" />
 </head>
 <body class="menu-body">
 
@@ -38,11 +38,13 @@
 </main>
 
 <span id="versao-app" class="versao"></span>
+<a href="#" id="link-sair" class="link-sair" style="display:none">🚪 Sair</a>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=19"></script>
+<script src="./app.js?v=20"></script>
 <script>
 // Aviso de data importante hoje (aniversário, feriado, evento...) — só um lembrete,
 // não envia nada sozinho. Some se não houver colecao() (ex.: sem Firebase configurado
@@ -60,6 +62,17 @@ if (typeof colecao === "function") {
       el.style.display = "none";
     }
   });
+}
+// Mostra "Sair" só quando há login de verdade (Firebase configurado); em modo
+// local (sem Firebase) não existe conta pra sair.
+if (auth) {
+  auth.onAuthStateChanged(user => {
+    document.getElementById("link-sair").style.display = user ? "" : "none";
+  });
+  document.getElementById("link-sair").onclick = e => {
+    e.preventDefault();
+    if (confirm("Sair da sua conta?")) auth.signOut().then(() => location.href = "./login.html");
+  };
 }
 </script>
 </body>

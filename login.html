@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Entrar - Central Executiva</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icone.svg" />
+  <link rel="stylesheet" href="./style.css?v=23" />
+</head>
+<body class="login-body">
+<div class="login-caixa">
+  <img src="./icone.svg" class="login-logo" alt="" />
+  <h1 class="login-titulo">CENTRAL<br>EXECUTIVA</h1>
+
+  <div class="login-abas">
+    <button type="button" class="login-aba ativa" id="aba-entrar">Entrar</button>
+    <button type="button" class="login-aba" id="aba-criar">Criar conta</button>
+  </div>
+
+  <form id="form-login">
+    <label>E-mail</label>
+    <input id="f-email" type="email" autocomplete="username" required />
+    <div id="campo-whatsapp" style="display:none">
+      <label>WhatsApp (com DDD)</label>
+      <input id="f-whatsapp" type="tel" placeholder="Ex.: 81999999999" autocomplete="tel" />
+    </div>
+    <label>Senha</label>
+    <input id="f-senha" type="password" autocomplete="current-password" required minlength="6" />
+    <div id="login-erro" class="login-erro"></div>
+    <button type="submit" class="btn btn-largo" id="btn-enviar">Entrar</button>
+  </form>
+  <a href="#" id="link-esqueci" class="login-link">Esqueci minha senha</a>
+</div>
+
+<span id="versao-app" class="versao"></span>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="./firebase-config.js?v=1"></script>
+<script src="./app.js?v=20"></script>
+<script src="./login.js?v=2"></script>
+</body>
+</html>

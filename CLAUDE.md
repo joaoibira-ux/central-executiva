@@ -21,12 +21,61 @@ desnecessário); se diferente, apaga Service Worker + caches e recarrega sozinho
 `version.json` é excluído do cache do Service Worker (`sw.js`). Por isso o passo 2 acima é
 obrigatório — sem ele o app nunca vai achar que atualizou.
 
+## Login e isolamento por usuário (2026-09-26 — mudança grande, ver abaixo)
+
+O João pediu login obrigatório com banco 100% isolado por usuário ("nada pode ser usado
+para todos"). Implementado assim:
+- **Firebase Authentication** (e-mail/senha) ativado no console (passo único que só dá pra
+  fazer por lá, igual ao Storage — mas esse é grátis, sem exigir Blaze).
+- **Autocadastro aberto**: qualquer um pode criar a própria conta em `login.html` (decisão
+  explícita do João) — sem convite/aprovação manual.
+- **Dados isolados por UID**: `colecao()` em `app.js` agora aponta pra
+  `usuarios/{uid}/<nome>` em vez de coleções soltas no topo. `app.js` expõe `auth`,
+  `uidAtual` e a Promise `prontoAuth` (resolve com o uid, ou `null` em modo local sem
+  Firebase) — toda página exceto `login.html` é redirecionada pra lá se ninguém estiver
+  logado (`onAuthStateChanged` guardado em `app.js`).
+- **`firestore.rules`**: só permite acesso a `usuarios/{uid}/**`, e só pro dono
+  (`request.auth.uid == uid`) — nada mais é acessível. As coleções antigas soltas
+  (`contatos`, `agenda`, `desenvolvimento`, `datasImportantes` no topo) ficaram
+  inacessíveis pelas regras novas; foram migradas pra dentro de um usuário específico (ver
+  "Migração dos dados antigos" abaixo) e não devem ser recriadas soltas de novo.
+- **Perfil do usuário** (`usuarios/{uid}` — o documento raiz, não uma subcoleção): campos
+  `email`, `whatsapp`, `criadoEm`, `confirmacaoEnviada` (bool). Criado em `login.js` no
+  momento do cadastro.
+- **Confirmação automática por WhatsApp** (2026-09-26, a pedido do João — ele quis usar o
+  mesmo "assistente"/número já usado pelos alertas do GW, não um canal novo): rodando na
+  MESMA VM que já hospeda a Evolution API do GW (`instance-20260726-022533`, projeto
+  `sistema-ibira`, ver [[evolution_api_vm]] e [[gcp_monitor_vm]]), cron a cada 5 min em
+  `~/ce-whatsapp-confirmacao/index.js` (Node + `firebase-admin` — atenção: firebase-admin
+  v14 mudou pra API modular, `require("firebase-admin/app")`/`require("firebase-admin/firestore")`,
+  não `admin.credential.cert`/`admin.firestore()` do jeito antigo). Autentica em
+  `central-executiva-jab` via uma service account dedicada
+  (`central-executiva-bot@central-executiva-jab.iam.gserviceaccount.com`, role
+  `roles/datastore.user`, chave em `~/ce-bot-key.json` na VM, permissão 600 — bypassa as
+  regras do Firestore, é acesso via IAM/Admin SDK). Verifica `usuarios` com
+  `confirmacaoEnviada == false`, manda mensagem de boas-vindas pro campo `whatsapp` via
+  `POST http://localhost:8080/message/sendText/gw` (mesma instância "gw" do GW,
+  `AUTHENTICATION_API_KEY` lida direto de `~/evolution-api/.env`, nunca hardcoded no
+  script), e marca `confirmacaoEnviada: true`. Log em `~/ce-whatsapp-confirmacao/log.txt`
+  na VM. **Antes de mexer nessa VM de novo, checar `free -h`/`df -h /` primeiro — histórico
+  de RAM/disco apertados (ver [[gcp_monitor_vm]]).**
+- **Migração dos dados antigos**: o sistema já tinha dados reais (contatos, agenda com
+  fotos, datas importantes) de antes do login existir. Decisão do João: viram os dados da
+  **Anne (Jaciane)**, que se cadastra sozinha (autocadastro) informando o WhatsApp dela na
+  hora. Script pronto em `~/ce-whatsapp-confirmacao/migrar-dados.js` na VM (`node
+  migrar-dados.js <UID>`) — copia `contatos`/`agenda`/`desenvolvimento`/`datasImportantes`
+  soltas pra `usuarios/{UID}/...`, preservando os IDs originais dos documentos (importante:
+  `contatoId` e outras referências dependem disso). **Só roda depois que a Anne criar a
+  conta de verdade** — pegar o UID dela em Authentication no console, ou perguntar ao João.
+  As coleções soltas originais não são apagadas automaticamente pela migração (decisão
+  deliberada, pra conferir visualmente antes de decidir apagar).
+
 ## Regras gerais
 
 - Arquivos do site ficam na raiz do repositório
-- Credenciais do Firebase em `firebase-config.js`; se vazio, o app roda em modo local (localStorage)
-- Firestore com regras abertas (`allow read, write: if true`), igual ao NATIVA/IBIRÁ
-- Coleções: `contatos` (agora com `aniversarioDia`/`aniversarioMes` opcionais), `agenda`,
+- Credenciais do Firebase em `firebase-config.js`; se vazio, o app roda em modo local (localStorage) — modo local não tem login (não existe multi-usuário sem Firebase)
+- Firestore com regras restritas por usuário (`usuarios/{uid}/**`, só o dono) — ver seção de login acima. NÃO são mais regras abertas.
+- Coleções (todas agora dentro de `usuarios/{uid}/...`): `contatos` (agora com `aniversarioDia`/`aniversarioMes` opcionais), `agenda`,
   `desenvolvimento` (backlog do próprio sistema, mesmo padrão do NATIVA/GW: campos
   texto/status "aberto"|"concluido"/criadoEm/concluidoEm/notaConclusao), `datasImportantes`
   (aniversários/reuniões/feriados/eventos recorrentes — campos nome/dia/mes/tipo

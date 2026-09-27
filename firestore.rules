@@ -1,8 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    // Isolamento total por usuário (2026-09-26): cada conta só lê/escreve dentro
+    // do próprio usuarios/{uid}/... — nada é compartilhado entre contas. Qualquer
+    // coisa fora desse caminho (ex.: as coleções antigas soltas, hoje migradas)
+    // fica inacessível por padrão.
+    match /usuarios/{uid}/{documento=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }

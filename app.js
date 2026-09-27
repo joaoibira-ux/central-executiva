@@ -1,12 +1,32 @@
-const VERSAO_CENTRAL = "1.31";
+const VERSAO_CENTRAL = "1.32";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
+let auth = null;
 if (usaFirebase) {
   firebase.initializeApp(window.FIREBASE_CONFIG);
   db = firebase.firestore();
   db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+  auth = firebase.auth();
 }
+
+// Login obrigatório + isolamento total por usuário: cada conta só enxerga os
+// próprios dados, guardados em usuarios/{uid}/... — nunca em coleções soltas
+// (2026-09-26, a pedido do João: "nada pode ser usado para todos"). Toda
+// página exceto login.html redireciona pra lá se não houver ninguém logado.
+// `prontoAuth` resolve com o uid (ou null em modo local) assim que o estado
+// de login é conhecido — colecao() espera por ele antes de tocar no Firestore.
+let uidAtual = null;
+const NA_TELA_DE_LOGIN = /(^|\/)login\.html$/.test(location.pathname);
+const prontoAuth = new Promise(resolve => {
+  if (!auth) { resolve(null); return; }
+  const cancelar = auth.onAuthStateChanged(user => {
+    cancelar();
+    if (!user && !NA_TELA_DE_LOGIN) { location.replace("./login.html"); return; }
+    uidAtual = user ? user.uid : null;
+    resolve(uidAtual);
+  });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("versao-app");
@@ -129,14 +149,25 @@ function escHtml(s) {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// Camada de dados: Firestore quando configurado, localStorage caso contrário.
+// Camada de dados: Firestore (isolado por usuário) quando configurado, localStorage
+// caso contrário. Todo acesso ao Firestore espera o login resolver primeiro.
 function colecao(nome) {
   if (usaFirebase) {
-    const c = db.collection(nome);
+    const ref = () => db.collection("usuarios").doc(uidAtual).collection(nome);
     return {
-      ouvir: cb => c.onSnapshot(s => cb(s.docs.map(d => ({ id: d.id, ...d.data() })))),
-      salvar: (id, obj) => id ? c.doc(id).set(obj, { merge: true }) : c.add({ ...obj, criadoEm: new Date().toISOString() }),
-      remover: id => c.doc(id).delete()
+      ouvir: cb => {
+        prontoAuth.then(uid => { if (uid) ref().onSnapshot(s => cb(s.docs.map(d => ({ id: d.id, ...d.data() })))); });
+      },
+      salvar: async (id, obj) => {
+        const uid = await prontoAuth;
+        if (!uid) return;
+        return id ? ref().doc(id).set(obj, { merge: true }) : ref().add({ ...obj, criadoEm: new Date().toISOString() });
+      },
+      remover: async id => {
+        const uid = await prontoAuth;
+        if (!uid) return;
+        return ref().doc(id).delete();
+      }
     };
   }
   const chave = "central_" + nome;

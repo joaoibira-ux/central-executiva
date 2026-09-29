@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.32";
+const VERSAO_CENTRAL = "1.33";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -147,6 +147,80 @@ function escHtml(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// ---------- Alarme de compromissos + indicador de pendência no ícone (2026-09-29) ----------
+// Roda em toda página (app.js é global). Não é notificação push de verdade (site
+// estático, sem servidor) — só dispara enquanto o app está aberto, mesmo limite já
+// aceito no lembrete de parabéns de Datas importantes.
+function tocarAlarmeSom() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 220].forEach(atraso => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = "sine"; osc.frequency.value = 880;
+        gain.gain.setValueAtTime(.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .35);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + .35);
+      }, atraso);
+    });
+  } catch (e) { /* navegador sem suporte a áudio ou bloqueado — ignora */ }
+}
+function mostrarAlarmeBanner(compromisso) {
+  const div = document.createElement("div");
+  div.className = "alarme-banner";
+  div.innerHTML = `<span>⏰ <b>${escHtml(compromisso.titulo)}</b> é agora${compromisso.local ? " · " + escHtml(compromisso.local) : ""}</span><button type="button" aria-label="Fechar">×</button>`;
+  div.querySelector("button").onclick = () => div.remove();
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 15000);
+}
+function idsJaAlertadosHoje() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  try {
+    const salvo = JSON.parse(localStorage.getItem("central_alarmes_disparados") || "{}");
+    return salvo.dia === hoje ? new Set(salvo.ids) : new Set();
+  } catch (e) { return new Set(); }
+}
+function marcarAlertado(id) {
+  const jaAlertados = idsJaAlertadosHoje();
+  jaAlertados.add(id);
+  localStorage.setItem("central_alarmes_disparados", JSON.stringify({ dia: new Date().toISOString().slice(0, 10), ids: [...jaAlertados] }));
+}
+function atualizarBadgeAgenda(lista) {
+  const link = document.querySelector('a[href="./agenda.html"]');
+  if (!link) return;
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  const pendentes = lista.filter(i => !i.feito && i.data && i.data <= hojeISO).length;
+  let badge = link.querySelector(".badge-pendencia");
+  if (pendentes > 0) {
+    if (!badge) { badge = document.createElement("span"); badge.className = "badge-pendencia"; link.appendChild(badge); }
+    badge.textContent = pendentes > 9 ? "9+" : String(pendentes);
+  } else if (badge) {
+    badge.remove();
+  }
+}
+let __agendaParaAlarme = [];
+function checarAlarmes() {
+  const agora = new Date();
+  const hojeISO = agora.toISOString().slice(0, 10);
+  const jaAlertados = idsJaAlertadosHoje();
+  __agendaParaAlarme.forEach(i => {
+    if (i.feito || i.data !== hojeISO || !i.hora || jaAlertados.has(i.id)) return;
+    const [h, m] = i.hora.split(":").map(Number);
+    const alvo = new Date(); alvo.setHours(h, m, 0, 0);
+    const diffMin = (agora - alvo) / 60000;
+    if (diffMin >= 0 && diffMin <= 5) { marcarAlertado(i.id); tocarAlarmeSom(); mostrarAlarmeBanner(i); }
+  });
+}
+if (typeof colecao === "function") {
+  colecao("agenda").ouvir(lista => {
+    __agendaParaAlarme = lista;
+    atualizarBadgeAgenda(lista);
+    checarAlarmes();
+  });
+  setInterval(checarAlarmes, 60000);
 }
 
 // Camada de dados: Firestore (isolado por usuário) quando configurado, localStorage

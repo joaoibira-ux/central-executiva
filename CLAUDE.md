@@ -108,4 +108,17 @@ para todos"). Implementado assim:
   documento inteiro no Firestore tem limite de ~1MB). Não tentar ativar o Storage de novo
   sem confirmar com o João.
 - Menu (`index.html`): HUD circular com título CENTRAL EXECUTIVA; ícones ativos = módulos existentes, os demais são decorativos
+- Agenda — concluídos numa página separada (2026-09-29): `agenda.js` filtra `feito:true` pra
+  fora da lista principal (só fica visível 2s, na animação do check, via `atrasoDescida`).
+  Compromissos concluídos ficam em `agenda-concluidos.html`/`.js` (link "✓" no cabeçalho da
+  Agenda), com o mesmo modal de visualização/edição/exclusão — desmarcar "Concluído" lá
+  manda o item de volta pra Agenda automaticamente.
+- Alarme de compromisso + indicador de pendência no ícone (2026-09-29, em `app.js`, roda em
+  toda página): enquanto o app está aberto, compara a cada 60s (e a cada mudança na coleção
+  `agenda`) se algum compromisso de hoje não concluído acabou de chegar na hora (até 5min de
+  atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`).
+  Não é push de verdade (site estático) — só funciona com o app aberto, registrado em
+  `localStorage` (`central_alarmes_disparados`) pra não repetir no mesmo dia. O ícone
+  "Agenda" no menu (`index.html`) ganha um badge vermelho (`.badge-pendencia`) com a
+  contagem de compromissos não concluídos de hoje ou atrasados.
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

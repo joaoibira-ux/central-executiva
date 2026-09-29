@@ -1,3 +1,6 @@
+// Lista só os compromissos já concluídos (agenda.js filtra esses pra fora da
+// lista principal desde 2026-09-29). Desmarcar "Concluído" aqui manda o item
+// de volta pra Agenda automaticamente (some daqui, reaparece lá).
 const col = colecao("agenda");
 let itens = [];
 let editandoId = null;
@@ -5,11 +8,6 @@ let veiodaVisualizacao = false;
 let anexosEditando = [];
 const $ = id => document.getElementById(id);
 
-// ---------- Anexos (guardados como base64 dentro do próprio documento no
-// Firestore — sem Firebase Storage, que passou a cobrar/exigir plano pago
-// pra ser ativado). Fotos de celular vêm grandes (vários MB): comprime até
-// caber num limite seguro. Um documento no Firestore tem no máximo ~1MB;
-// por isso o limite por arquivo e a soma de todos os anexos são bem menores.
 const LIMITE_ANEXO = 450 * 1024;
 const LIMITE_TOTAL_ANEXOS = 900 * 1024;
 
@@ -86,32 +84,24 @@ function rotuloDia(iso) {
   return iso === hoje ? "Hoje · " + base : iso === amanha ? "Amanhã · " + base : base;
 }
 
-// Ao marcar como concluído, o item continua no lugar por 2s (dá tempo de ver o
-// check acontecer) e só então desce pro fim do dia dele na lista.
-const atrasoDescida = new Map(); // id -> setTimeout, enquanto o item ainda não deve "descer"
-
 function render() {
-  // Compromissos concluídos saem da lista principal (vão para agenda-concluidos.html) —
-  // só ficam aqui durante a janela de 2s da animação de check (atrasoDescida).
-  const l = itens
-    .filter(i => !i.feito || atrasoDescida.has(i.id))
-    .sort((a, b) => {
-      if (a.data !== b.data) return (a.data || "").localeCompare(b.data || "");
-      return (a.hora || "").localeCompare(b.hora || "");
-    });
+  // Mais recentes primeiro — lista funciona como histórico do que já foi feito.
+  const l = itens.filter(i => i.feito).sort((a, b) => {
+    if (a.data !== b.data) return (b.data || "").localeCompare(a.data || "");
+    return (b.hora || "").localeCompare(a.hora || "");
+  });
   let html = "", diaAtual = "";
   l.forEach(i => {
     if (i.data !== diaAtual) { diaAtual = i.data; html += `<div class="dia">${escHtml(rotuloDia(i.data))}</div>`; }
-    html += `<div class="card ${i.feito ? "feito" : ""}" data-id="${i.id}">
-      <input type="checkbox" ${i.feito ? "checked" : ""} data-feito="${i.id}" />
+    html += `<div class="card feito" data-id="${i.id}">
+      <input type="checkbox" checked data-feito="${i.id}" />
       <div class="info"><b>${escHtml(i.titulo)}</b>
         <small>${escHtml([i.hora, i.local].filter(Boolean).join(" · "))}</small></div>
     </div>`;
   });
-  $("lista").innerHTML = html || `<p class="vazio">Nenhum compromisso.</p>`;
+  $("lista").innerHTML = html || `<p class="vazio">Nenhum compromisso concluído ainda.</p>`;
 }
 
-// ---------- Tela de visualização (somente leitura) ----------
 function visualizar(i) {
   editandoId = i.id;
   $("ver-feito").checked = !!i.feito;
@@ -128,17 +118,15 @@ function visualizar(i) {
 }
 const fecharVisualizacao = () => $("modal-ver").classList.remove("aberto");
 
-// ---------- Tela de edição ----------
 function abrir(i, focoCampo) {
-  editandoId = i ? i.id : null;
-  $("modal-titulo").textContent = i ? "Editar compromisso" : "Novo compromisso";
-  $("f-titulo").value = i?.titulo || "";
-  $("f-data").value = i?.data || new Date().toISOString().slice(0, 10);
-  $("f-hora").value = i?.hora || "";
-  $("f-local").value = i?.local || "";
-  $("f-obs").value = i?.obs || "";
-  $("excluir").style.display = i ? "" : "none";
-  anexosEditando = i?.anexos ? [...i.anexos] : [];
+  editandoId = i.id;
+  $("f-titulo").value = i.titulo || "";
+  $("f-data").value = i.data || new Date().toISOString().slice(0, 10);
+  $("f-hora").value = i.hora || "";
+  $("f-local").value = i.local || "";
+  $("f-obs").value = i.obs || "";
+  $("excluir").style.display = "";
+  anexosEditando = i.anexos ? [...i.anexos] : [];
   renderAnexosEdicao();
   $("modal").classList.add("aberto");
   const campoParaInput = { titulo: "f-titulo", data: "f-data", local: "f-local", obs: "f-obs" };
@@ -150,27 +138,15 @@ function abrir(i, focoCampo) {
 }
 const fechar = () => $("modal").classList.remove("aberto");
 
-$("novo").onclick = () => { veiodaVisualizacao = false; abrir(null); };
 $("cancelar").onclick = () => { fechar(); if (veiodaVisualizacao) $("modal-ver").classList.add("aberto"); };
 
 $("lista").onclick = e => {
   const chk = e.target.closest("[data-feito]");
-  if (chk) {
-    const id = chk.dataset.feito;
-    col.salvar(id, { feito: chk.checked });
-    clearTimeout(atrasoDescida.get(id));
-    if (chk.checked) {
-      atrasoDescida.set(id, setTimeout(() => { atrasoDescida.delete(id); render(); }, 2000));
-    } else {
-      atrasoDescida.delete(id); // desmarcar volta pro lugar na hora, sem atraso
-    }
-    return;
-  }
+  if (chk) { col.salvar(chk.dataset.feito, { feito: chk.checked }); return; }
   const card = e.target.closest(".card");
   if (card) visualizar(itens.find(i => i.id === card.dataset.id));
 };
 
-// Dentro da visualização: cada campo clicado abre a edição focada nele
 $("modal-ver").querySelectorAll(".ver-campo").forEach(campo => {
   campo.onclick = () => {
     veiodaVisualizacao = true;
@@ -228,7 +204,6 @@ $("excluir").onclick = async () => {
 col.ouvir(l => {
   itens = l;
   render();
-  // Se a tela de visualização estiver aberta, atualiza com os dados novos (ex.: após salvar)
   if ($("modal-ver").classList.contains("aberto") && editandoId) {
     const atual = itens.find(i => i.id === editandoId);
     if (atual) visualizar(atual); else fecharVisualizacao();

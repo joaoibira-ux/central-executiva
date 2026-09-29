@@ -119,6 +119,21 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 .card.feito .info { opacity: .78; text-decoration: line-through; }
 .card.hoje { border-color: var(--azul); box-shadow: 0 0 12px rgba(58, 180, 255, .35); }
 
+/* Indicador de pendência no ícone do menu + alarme de compromisso (2026-09-29) */
+.badge-pendencia {
+  position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; padding: 0 3px;
+  border-radius: 999px; background: var(--perigo); color: #fff; font-size: .6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+  box-shadow: 0 0 6px rgba(255, 93, 108, .7);
+}
+.alarme-banner {
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  z-index: 20; display: flex; align-items: center; gap: 10px; max-width: min(90vw, 420px);
+  background: rgba(255, 93, 108, .18); border: 1px solid var(--perigo); border-radius: 14px;
+  padding: 12px 14px; color: var(--texto); font-size: .85rem; box-shadow: 0 0 18px rgba(255, 93, 108, .5);
+}
+.alarme-banner button { border: 0; background: transparent; color: var(--texto); font-size: 1.1rem; line-height: 1; cursor: pointer; padding: 0 2px; }
+
 /* Aviso de data importante hoje, no menu principal */
 .aviso-datas {
   position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);

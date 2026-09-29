@@ -7,16 +7,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
   <meta name="theme-color" content="#040b1c" />
-  <title>Agenda - Central Executiva</title>
+  <title>Concluídos - Central Executiva</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./icone.svg" />
   <link rel="stylesheet" href="./style.css?v=24" />
 </head>
 <body>
-<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Agenda</h2><a href="./agenda-concluidos.html" aria-label="Concluídos" title="Concluídos">✓</a></header><main class="conteudo">
+<header class="topo"><a href="./agenda.html" aria-label="Voltar">←</a><h2>Concluídos</h2></header><main class="conteudo">
   <div id="lista"></div>
 </main>
-<button class="fab" id="novo" aria-label="Novo compromisso">+</button>
 
 <div class="modal" id="modal-ver"><div class="caixa">
   <label class="ver-check"><input type="checkbox" id="ver-feito" /> Concluído</label>
@@ -44,7 +43,7 @@
 </div></div>
 
 <div class="modal" id="modal"><div class="caixa">
-  <h3 id="modal-titulo">Novo compromisso</h3>
+  <h3 id="modal-titulo">Editar compromisso</h3>
   <label>Título *</label><input id="f-titulo" />
   <label>Data *</label><input id="f-data" type="date" />
   <label>Hora</label><input id="f-hora" type="time" />
@@ -64,6 +63,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
 <script src="./app.js?v=21"></script>
-<script src="./agenda.js?v=5"></script>
+<script src="./agenda-concluidos.js?v=1"></script>
 </body>
 </html>

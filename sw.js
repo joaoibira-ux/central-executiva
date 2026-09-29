@@ -1,16 +1,18 @@
-const VERSION = "central-v33";
+const VERSION = "central-v34";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
+  "./agenda-concluidos.html",
   "./importar.html",
   "./desenvolvimento.html",
   "./datas.html",
   "./login.html",
-  "./style.css?v=23",
-  "./app.js?v=20",
+  "./style.css?v=24",
+  "./app.js?v=21",
   "./contatos.js?v=5",
-  "./agenda.js?v=4",
+  "./agenda.js?v=5",
+  "./agenda-concluidos.js?v=1",
   "./importar.js?v=1",
   "./desenvolvimento.js?v=1",
   "./datas.js?v=3",

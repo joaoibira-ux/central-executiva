@@ -116,7 +116,8 @@ para todos"). Implementado assim:
 - Alarme de compromisso + indicador de pendência no ícone (2026-09-29, em `app.js`, roda em
   toda página): enquanto o app está aberto, compara a cada 60s (e a cada mudança na coleção
   `agenda`) se algum compromisso de hoje não concluído acabou de chegar na hora (até 5min de
-  atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`).
+  atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`,
+  persistente — só some se o usuário clicar no ×, não desaparece sozinho).
   Isso sozinho NÃO é confiável no iPhone (Safari só libera áudio depois de um toque real na
   própria página, e suspende o contexto nesse meio-tempo) — ver a solução de push abaixo,
   que é a que vale de verdade. O ícone "Agenda" no menu (`index.html`) ganha um badge
@@ -154,4 +155,14 @@ para todos"). Implementado assim:
     `~/ce-push-alarmes/log.txt` na VM mostra tentativa de envio; (3) o índice de collection
     group está pronto (erro `FAILED_PRECONDITION... index is currently building` na
     primeira vez é normal, leva alguns minutos).
+  - **Bug de fuso corrigido em 2026-09-30**: a VM roda em UTC, mas `data`/`hora` do
+    compromisso são o que o usuário digitou no fuso dele (Brasil, UTC-3 fixo, sem horário
+    de verão desde 2019). O código original fazia `new Date(); alvo.setHours(h,m,...)`, que
+    interpreta a hora no fuso do PROCESSO (UTC na VM) — um compromisso às 08:30 virava alvo
+    "08:30 UTC" (= 05:30 no Brasil) em vez de "11:30 UTC" (= 08:30 no Brasil), fazendo o
+    alarme parecer sempre "já passado". Corrigido tratando tanto "agora" quanto o alvo do
+    compromisso deslocados por -3h e comparados nesse mesmo referencial (não depende do
+    fuso configurado no processo/SO). **Se a VM for trocada ou o fuso do processo mudar,
+    essa lógica continua correta** — não usar `Date.setHours`/fuso local do servidor de
+    novo pra isso.
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

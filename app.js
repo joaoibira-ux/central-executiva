@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.37";
+const VERSAO_CENTRAL = "1.38";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -197,7 +197,6 @@ function mostrarAlarmeBanner(compromisso) {
   div.innerHTML = `<span>⏰ <b>${escHtml(compromisso.titulo)}</b> é agora${compromisso.local ? " · " + escHtml(compromisso.local) : ""}</span><button type="button" aria-label="Fechar">×</button>`;
   div.querySelector("button").onclick = () => div.remove();
   document.body.appendChild(div);
-  setTimeout(() => div.remove(), 15000);
 }
 function idsJaAlertadosHoje() {
   const hoje = new Date().toISOString().slice(0, 10);

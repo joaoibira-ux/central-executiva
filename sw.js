@@ -1,4 +1,4 @@
-const VERSION = "central-v41";
+const VERSION = "central-v42";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./datas.html",
   "./login.html",
   "./style.css?v=24",
-  "./app.js?v=28",
+  "./app.js?v=29",
   "./contatos.js?v=5",
   "./agenda.js?v=7",
   "./agenda-concluidos.js?v=2",
@@ -61,7 +61,9 @@ self.addEventListener("push", e => {
     body: dados.body,
     icon: "./icone.svg",
     badge: "./icone.svg",
-    tag: dados.tag || "alarme-agenda"
+    tag: dados.tag || "alarme-agenda",
+    silent: false,
+    requireInteraction: true
   }));
 });
 

@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.34";
+const VERSAO_CENTRAL = "1.35";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -167,8 +167,11 @@ function destravarAudio() {
   }
   if (audioCtxCompartilhado.state === "suspended") audioCtxCompartilhado.resume().catch(() => {});
 }
+// Sem "once": cada página é um carregamento novo (site não é SPA), então o toque
+// que destravou o áudio numa tela não vale pra outra — e o iOS também pode suspender
+// o contexto de novo depois de bloquear a tela, então vale reforçar a cada toque.
 ["touchstart", "click", "pointerdown"].forEach(evento => {
-  document.addEventListener(evento, destravarAudio, { once: true, passive: true });
+  document.addEventListener(evento, destravarAudio, { passive: true });
 });
 
 function tocarAlarmeSom() {

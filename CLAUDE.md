@@ -148,8 +148,8 @@ para todos"). Implementado assim:
     2min de atraso) e ainda não tem `alarmeEnviado`, busca `usuarios/{uid}.pushSubscription`
     e manda via `web-push`, depois marca `alarmeEnviado: true` no próprio documento do
     compromisso (pra não repetir). **Editar um compromisso (`agenda.js`/
-    `agenda-concluidos.js`) sempre reseta `alarmeEnviado: false`**, senão mudar a hora não
-    rearmaria o alarme. Log em `~/ce-push-alarmes/log.txt` na VM.
+    `agenda-concluidos.js`) sempre reseta `alarmeContagem: 0`**, senão mudar a hora não
+    rearmaria os reenvios. Log em `~/ce-push-alarmes/log.txt` na VM.
   - **How to apply**: se o alarme não chegar, checar nessa ordem — (1) o usuário
     realmente ativou notificações (`usuarios/{uid}.pushSubscription` existe?); (2)
     `~/ce-push-alarmes/log.txt` na VM mostra tentativa de envio; (3) o índice de collection
@@ -177,4 +177,12 @@ para todos"). Implementado assim:
     composto `data+feito` automaticamente. (2) `agenda.js` agora grava `feito: false`
     explícito ao CRIAR um compromisso (nunca em edição, senão reabriria um item já
     concluído).
+  - **Reenvio de até 5x (2026-09-30)**: o iOS só toca o som padrão do sistema uma vez por
+    notificação — não dá pra fazer tocar mais alto ou em loop via Web Push (limite do SO,
+    sem contorno). Pra simular um alarme de verdade, `alarmes-push.js` reenvia a MESMA
+    notificação (mesma `tag`) uma vez por minuto, até `MAX_REENVIOS = 5` vezes, ou até o
+    compromisso ser marcado como `feito` (o que vier primeiro). Campo trocado de
+    `alarmeEnviado` (boolean) pra `alarmeContagem` (number, quantos reenvios já saíram).
+    **Essencial**: `renotify: true` no `showNotification()` do `sw.js` — sem isso, reenvios
+    com a mesma tag substituem a notificação em silêncio, sem tocar de novo.
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

@@ -191,7 +191,7 @@ $("salvar").onclick = async () => {
   if (salvando) return;
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeEnviado: false };
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
   salvando = true;
   try {
     await comPrazo(col.salvar(editandoId, dados), 10000, "Demorou demais pra salvar — confira sua conexão e tente de novo.");

@@ -218,8 +218,8 @@ $("salvar").onclick = async () => {
   if (salvando) return;
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
-  // alarmeEnviado:false garante que editar data/hora rearma o alarme por push (VM).
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeEnviado: false };
+  // alarmeContagem:0 garante que editar data/hora rearma os reenvios do alarme por push (VM).
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
   // Só em criação: em edição não pode sobrescrever "feito" de um item já concluído.
   if (!editandoId) dados.feito = false;
   salvando = true;

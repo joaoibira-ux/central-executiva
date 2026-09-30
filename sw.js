@@ -1,4 +1,4 @@
-const VERSION = "central-v44";
+const VERSION = "central-v45";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
@@ -9,10 +9,10 @@ const ASSETS = [
   "./datas.html",
   "./login.html",
   "./style.css?v=24",
-  "./app.js?v=31",
+  "./app.js?v=32",
   "./contatos.js?v=5",
-  "./agenda.js?v=9",
-  "./agenda-concluidos.js?v=4",
+  "./agenda.js?v=10",
+  "./agenda-concluidos.js?v=5",
   "./importar.js?v=1",
   "./desenvolvimento.js?v=1",
   "./datas.js?v=3",
@@ -63,7 +63,8 @@ self.addEventListener("push", e => {
     badge: "./icone.svg",
     tag: dados.tag || "alarme-agenda",
     silent: false,
-    requireInteraction: true
+    requireInteraction: true,
+    renotify: true // sem isso, reenvios com a mesma "tag" substituem a notificação em silêncio (sem tocar de novo)
   }));
 });
 

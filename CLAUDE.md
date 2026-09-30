@@ -165,4 +165,16 @@ para todos"). Implementado assim:
     fuso configurado no processo/SO). **Se a VM for trocada ou o fuso do processo mudar,
     essa lógica continua correta** — não usar `Date.setHours`/fuso local do servidor de
     novo pra isso.
+  - **Bug do campo `feito` ausente corrigido em 2026-09-30**: compromissos recém-criados
+    nunca tinham o campo `feito` gravado (só passava a existir depois de marcar/desmarcar o
+    checkbox alguma vez) — o filtro `.where("feito","==",false)` da collection group query
+    NUNCA batia com um documento sem esse campo, então a notificação nunca disparava pra
+    compromissos novos (o que é o caso comum). Corrigido em duas frentes: (1)
+    `alarmes-push.js` na VM não filtra mais `feito` no Firestore, filtra em JS
+    (`if (i.feito) continue`, que trata ausente-ou-false igual); isso exigiu adicionar um
+    field override de índice de campo único (`data`, `COLLECTION_GROUP`) em
+    `firestore.indexes.json`, porque a query só com `data` não reaproveita o índice
+    composto `data+feito` automaticamente. (2) `agenda.js` agora grava `feito: false`
+    explícito ao CRIAR um compromisso (nunca em edição, senão reabriria um item já
+    concluído).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

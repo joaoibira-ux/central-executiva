@@ -186,24 +186,18 @@ $("f-anexos-lista").onclick = e => {
   renderAnexosEdicao();
 };
 
-let salvando = false;
-$("salvar").onclick = async () => {
-  if (salvando) return;
+// Ver comentário equivalente em agenda.js: não trava mais esperando a
+// promessa do Firestore resolver, fecha na hora e avisa depois se der erro.
+$("salvar").onclick = () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
   const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
-  salvando = true;
-  try {
-    await comPrazo(col.salvar(editandoId, dados), 10000, "Demorou demais pra salvar — confira sua conexão e tente de novo.");
-    fechar();
-    if (veiodaVisualizacao) {
-      const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
-      visualizar({ id: editandoId, feito: feitoAtual, ...dados });
-    }
-  } catch (e) {
-    alert("Não deu pra salvar: " + e.message);
-  } finally {
-    salvando = false;
+  const idSalvo = editandoId;
+  col.salvar(idSalvo, dados).catch(e => alert("Não deu pra salvar: " + e.message));
+  fechar();
+  if (veiodaVisualizacao) {
+    const feitoAtual = itens.find(x => x.id === idSalvo)?.feito;
+    visualizar({ id: idSalvo, feito: feitoAtual, ...dados });
   }
 };
 $("excluir").onclick = async () => {

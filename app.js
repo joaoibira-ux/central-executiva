@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.45";
+const VERSAO_CENTRAL = "1.46";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -147,17 +147,6 @@ function escHtml(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-// Uma gravação no Firestore que nunca resolve nem dá erro (ex.: app suspenso
-// em segundo plano no meio da espera, comum no iPhone) travava telas de
-// "Salvar" pra sempre — a trava contra duplo-clique ficava presa em true sem
-// jeito de sair. Com prazo, o pior caso é um alerta pedindo pra tentar de novo.
-function comPrazo(promessa, ms, mensagem) {
-  return Promise.race([
-    promessa,
-    new Promise((_, rejeitar) => setTimeout(() => rejeitar(new Error(mensagem)), ms))
-  ]);
 }
 
 // ---------- Alarme de compromissos + indicador de pendência no ícone (2026-09-29) ----------

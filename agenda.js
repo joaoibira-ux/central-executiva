@@ -210,30 +210,25 @@ $("f-anexos-lista").onclick = e => {
   renderAnexosEdicao();
 };
 
-// Sem essa trava, cada toque extra em "Salvar" enquanto a gravação anterior
-// ainda está em andamento cria um compromisso duplicado (editandoId continua
-// null até o modal fechar, então cada clique vira um col.salvar() novo).
-let salvando = false;
-$("salvar").onclick = async () => {
-  if (salvando) return;
+// O Firestore (com persistência offline) já grava local na hora e sincroniza
+// sozinho depois — não tem por que travar a tela esperando a promessa do
+// col.salvar() resolver. Fazer isso causava telas de "Salvar" que pareciam
+// travadas no iPhone (a gravação completava de verdade, só a promessa
+// demorava demais pra "retornar" no JS da página). Agora fecha na hora e só
+// avisa depois, em segundo plano, se realmente der erro.
+$("salvar").onclick = () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
   // alarmeContagem:0 garante que editar data/hora rearma os reenvios do alarme por push (VM).
   const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
   // Só em criação: em edição não pode sobrescrever "feito" de um item já concluído.
   if (!editandoId) dados.feito = false;
-  salvando = true;
-  try {
-    await comPrazo(col.salvar(editandoId, dados), 10000, "Demorou demais pra salvar — confira sua conexão e tente de novo.");
-    fechar();
-    if (veiodaVisualizacao) {
-      const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
-      visualizar({ id: editandoId, feito: feitoAtual, ...dados });
-    }
-  } catch (e) {
-    alert("Não deu pra salvar: " + e.message);
-  } finally {
-    salvando = false;
+  const idSalvo = editandoId;
+  col.salvar(idSalvo, dados).catch(e => alert("Não deu pra salvar: " + e.message));
+  fechar();
+  if (veiodaVisualizacao) {
+    const feitoAtual = itens.find(x => x.id === idSalvo)?.feito;
+    visualizar({ id: idSalvo, feito: feitoAtual, ...dados });
   }
 };
 $("excluir").onclick = async () => {

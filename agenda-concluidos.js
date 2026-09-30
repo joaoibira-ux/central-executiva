@@ -200,6 +200,8 @@ $("salvar").onclick = async () => {
       const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
       visualizar({ id: editandoId, feito: feitoAtual, ...dados });
     }
+  } catch (e) {
+    alert("Não deu pra salvar: " + e.message);
   } finally {
     salvando = false;
   }

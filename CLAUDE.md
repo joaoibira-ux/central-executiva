@@ -188,4 +188,13 @@ para todos"). Implementado assim:
     `alarmeEnviado` (boolean) pra `alarmeContagem` (number, quantos reenvios já saíram).
     **Essencial**: `renotify: true` no `showNotification()` do `sw.js` — sem isso, reenvios
     com a mesma tag substituem a notificação em silêncio, sem tocar de novo.
+- **Padrão "Salvar" otimista (2026-09-30, `agenda.js`/`agenda-concluidos.js`)**: os botões
+  "Salvar" NÃO esperam (`await`) a promessa do `col.salvar()` do Firestore resolver antes de
+  fechar a tela — fecham na hora e só mostram alerta depois, em segundo plano, se der erro.
+  Motivo: no iPhone, essa promessa não estava "retornando" de forma confiável mesmo quando a
+  gravação já tinha completado de verdade (Firestore com persistência grava local na hora e
+  sincroniza sozinho depois) — travava a tela de edição indefinidamente sem erro nenhum.
+  Chegou a existir uma trava contra duplo-clique + timeout de 10s (removida), que não
+  resolvia a causa raiz, só limitava o estrago. **Seguir esse mesmo padrão otimista em
+  qualquer novo formulário** (não usar `await col.salvar(...)` antes de fechar modal).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

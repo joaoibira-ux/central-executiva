@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.38";
+const VERSAO_CENTRAL = "1.39";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -193,9 +193,11 @@ function tocarAlarmeSom() {
 }
 function mostrarAlarmeBanner(compromisso) {
   const div = document.createElement("div");
-  div.className = "alarme-banner";
-  div.innerHTML = `<span>⏰ <b>${escHtml(compromisso.titulo)}</b> é agora${compromisso.local ? " · " + escHtml(compromisso.local) : ""}</span><button type="button" aria-label="Fechar">×</button>`;
-  div.querySelector("button").onclick = () => div.remove();
+  div.className = "alarme-banner alarme-banner-clicavel";
+  div.innerHTML = `<span>⏰ <b>${escHtml(compromisso.titulo)}</b> é agora${compromisso.local ? " · " + escHtml(compromisso.local) : ""} — toque para silenciar</span>`;
+  tocarAlarmeSom();
+  const intervalo = setInterval(tocarAlarmeSom, 5000);
+  div.onclick = () => { clearInterval(intervalo); div.remove(); };
   document.body.appendChild(div);
 }
 function idsJaAlertadosHoje() {
@@ -233,7 +235,7 @@ function checarAlarmes() {
     const [h, m] = i.hora.split(":").map(Number);
     const alvo = new Date(); alvo.setHours(h, m, 0, 0);
     const diffMin = (agora - alvo) / 60000;
-    if (diffMin >= 0 && diffMin <= 5) { marcarAlertado(i.id); tocarAlarmeSom(); mostrarAlarmeBanner(i); }
+    if (diffMin >= 0 && diffMin <= 5) { marcarAlertado(i.id); mostrarAlarmeBanner(i); }
   });
 }
 if (typeof colecao === "function") {

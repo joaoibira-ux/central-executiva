@@ -186,15 +186,22 @@ $("f-anexos-lista").onclick = e => {
   renderAnexosEdicao();
 };
 
+let salvando = false;
 $("salvar").onclick = async () => {
+  if (salvando) return;
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
   const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeEnviado: false };
-  await col.salvar(editandoId, dados);
-  fechar();
-  if (veiodaVisualizacao) {
-    const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
-    visualizar({ id: editandoId, feito: feitoAtual, ...dados });
+  salvando = true;
+  try {
+    await col.salvar(editandoId, dados);
+    fechar();
+    if (veiodaVisualizacao) {
+      const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
+      visualizar({ id: editandoId, feito: feitoAtual, ...dados });
+    }
+  } finally {
+    salvando = false;
   }
 };
 $("excluir").onclick = async () => {

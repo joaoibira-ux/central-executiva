@@ -134,6 +134,8 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
 }
 .alarme-banner button { border: 0; background: transparent; color: var(--texto); font-size: 1.1rem; line-height: 1; cursor: pointer; padding: 0 2px; }
 .alarme-banner .btn { background: var(--azul); color: #021227; font-weight: 600; font-size: .8rem; line-height: normal; flex: none; }
+.alarme-banner-clicavel { cursor: pointer; animation: pulso-alarme 1s infinite; }
+@keyframes pulso-alarme { 50% { box-shadow: 0 0 28px rgba(255, 93, 108, .85); } }
 
 /* Aviso de data importante hoje, no menu principal */
 .aviso-datas {

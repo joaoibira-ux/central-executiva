@@ -210,16 +210,26 @@ $("f-anexos-lista").onclick = e => {
   renderAnexosEdicao();
 };
 
+// Sem essa trava, cada toque extra em "Salvar" enquanto a gravação anterior
+// ainda está em andamento cria um compromisso duplicado (editandoId continua
+// null até o modal fechar, então cada clique vira um col.salvar() novo).
+let salvando = false;
 $("salvar").onclick = async () => {
+  if (salvando) return;
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
   // alarmeEnviado:false garante que editar data/hora rearma o alarme por push (VM).
   const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeEnviado: false };
-  await col.salvar(editandoId, dados);
-  fechar();
-  if (veiodaVisualizacao) {
-    const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
-    visualizar({ id: editandoId, feito: feitoAtual, ...dados });
+  salvando = true;
+  try {
+    await col.salvar(editandoId, dados);
+    fechar();
+    if (veiodaVisualizacao) {
+      const feitoAtual = itens.find(x => x.id === editandoId)?.feito;
+      visualizar({ id: editandoId, feito: feitoAtual, ...dados });
+    }
+  } finally {
+    salvando = false;
   }
 };
 $("excluir").onclick = async () => {

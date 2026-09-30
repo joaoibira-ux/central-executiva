@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.44";
+const VERSAO_CENTRAL = "1.45";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -226,8 +226,20 @@ function marcarAlertado(id) {
 function atualizarBadgeAgenda(lista) {
   const link = document.querySelector('a[href="./agenda.html"]');
   if (!link) return;
-  const hojeISO = new Date().toISOString().slice(0, 10);
-  const pendentes = lista.filter(i => !i.feito && i.data && i.data <= hojeISO).length;
+  const agora = new Date();
+  const hojeISO = agora.toISOString().slice(0, 10);
+  // "Vencido" de verdade: dia anterior (qualquer hora), ou hoje com hora definida e já
+  // passada. Hoje sem hora ainda definida, ou hoje com hora que ainda não chegou, não conta.
+  const pendentes = lista.filter(i => {
+    if (i.feito || !i.data) return false;
+    if (i.data < hojeISO) return true;
+    if (i.data === hojeISO && i.hora) {
+      const [h, m] = i.hora.split(":").map(Number);
+      const alvo = new Date(); alvo.setHours(h, m, 0, 0);
+      return agora >= alvo;
+    }
+    return false;
+  }).length;
   let badge = link.querySelector(".badge-pendencia");
   if (pendentes > 0) {
     if (!badge) { badge = document.createElement("span"); badge.className = "badge-pendencia"; link.appendChild(badge); }

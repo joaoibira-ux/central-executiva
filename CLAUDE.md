@@ -117,7 +117,10 @@ para todos"). Implementado assim:
   toda página): enquanto o app está aberto, compara a cada 60s (e a cada mudança na coleção
   `agenda`) se algum compromisso de hoje não concluído acabou de chegar na hora (até 5min de
   atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`,
-  persistente — só some se o usuário clicar no ×, não desaparece sozinho).
+  persistente — só some se o usuário clicar no ×, não desaparece sozinho). O badge conta só
+  "vencido" de verdade: dia anterior (qualquer hora) OU hoje com hora definida e já passada
+  — hoje sem hora, ou hoje com hora ainda não chegada, não entra na contagem (bug corrigido
+  em 2026-09-30, contava qualquer pendência de hoje mesmo com horário futuro).
   Isso sozinho NÃO é confiável no iPhone (Safari só libera áudio depois de um toque real na
   própria página, e suspende o contexto nesse meio-tempo) — ver a solução de push abaixo,
   que é a que vale de verdade. O ícone "Agenda" no menu (`index.html`) ganha um badge

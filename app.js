@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.36";
+const VERSAO_CENTRAL = "1.37";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -296,7 +296,11 @@ if (usaFirebase && "Notification" in window && "serviceWorker" in navigator && "
         if (sub) salvarInscricaoPush(sub);
       });
     } else if (Notification.permission === "default" && !localStorage.getItem("central_push_dispensado")) {
-      document.addEventListener("DOMContentLoaded", mostrarConviteNotificacoes);
+      // Não dá pra esperar "DOMContentLoaded" aqui: como prontoAuth é assíncrono
+      // (espera o Firebase Auth resolver), esse evento normalmente já disparou
+      // faz tempo quando este .then() roda — o listener nunca seria chamado.
+      if (document.body) mostrarConviteNotificacoes();
+      else document.addEventListener("DOMContentLoaded", mostrarConviteNotificacoes);
     }
   });
 }

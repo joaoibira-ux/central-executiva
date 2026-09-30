@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.33";
+const VERSAO_CENTRAL = "1.34";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -153,9 +153,29 @@ function escHtml(s) {
 // Roda em toda página (app.js é global). Não é notificação push de verdade (site
 // estático, sem servidor) — só dispara enquanto o app está aberto, mesmo limite já
 // aceito no lembrete de parabéns de Datas importantes.
+// No iPhone (Safari/PWA), um AudioContext só toca de verdade se foi criado/retomado
+// dentro de um gesto do usuário (toque) — criado direto num setTimeout/setInterval
+// (como o alarme dispara), ele fica mudo e sem erro nenhum. Por isso criamos UM
+// contexto compartilhado, destravado no primeiro toque na tela, e reaproveitamos
+// (com resume()) toda vez que o alarme precisa tocar depois. Mesmo assim, o
+// interruptor físico de silencioso do iPhone ainda pode mudar o som (limite do
+// Safari, sem contorno confiável).
+let audioCtxCompartilhado = null;
+function destravarAudio() {
+  if (!audioCtxCompartilhado) {
+    try { audioCtxCompartilhado = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  }
+  if (audioCtxCompartilhado.state === "suspended") audioCtxCompartilhado.resume().catch(() => {});
+}
+["touchstart", "click", "pointerdown"].forEach(evento => {
+  document.addEventListener(evento, destravarAudio, { once: true, passive: true });
+});
+
 function tocarAlarmeSom() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    destravarAudio();
+    const ctx = audioCtxCompartilhado;
+    if (!ctx) return;
     [0, 220].forEach(atraso => {
       setTimeout(() => {
         const osc = ctx.createOscillator(), gain = ctx.createGain();

@@ -180,14 +180,18 @@ para todos"). Implementado assim:
     composto `data+feito` automaticamente. (2) `agenda.js` agora grava `feito: false`
     explícito ao CRIAR um compromisso (nunca em edição, senão reabriria um item já
     concluído).
-  - **Reenvio de até 5x (2026-09-30)**: o iOS só toca o som padrão do sistema uma vez por
-    notificação — não dá pra fazer tocar mais alto ou em loop via Web Push (limite do SO,
-    sem contorno). Pra simular um alarme de verdade, `alarmes-push.js` reenvia a MESMA
-    notificação (mesma `tag`) uma vez por minuto, até `MAX_REENVIOS = 5` vezes, ou até o
-    compromisso ser marcado como `feito` (o que vier primeiro). Campo trocado de
-    `alarmeEnviado` (boolean) pra `alarmeContagem` (number, quantos reenvios já saíram).
-    **Essencial**: `renotify: true` no `showNotification()` do `sw.js` — sem isso, reenvios
-    com a mesma tag substituem a notificação em silêncio, sem tocar de novo.
+  - **Envio único e persistente (2026-09-30)**: o iOS só toca o som padrão do sistema uma
+    vez por notificação — não dá pra fazer tocar mais alto ou em loop via Web Push (limite
+    do SO, sem contorno). Chegou a existir reenvio de até 5x (uma vez por minuto), mas o
+    João pediu pra reduzir pra **1 envio só** (`MAX_REENVIOS = 1` em `alarmes-push.js`) —
+    a notificação já fica parada na Central de Notificações do iPhone até ele tocar ou
+    dispensar (`requireInteraction: true` no `sw.js`), não precisa repetir o som.
+    `JANELA_MINUTOS` (3) é separado de `MAX_REENVIOS` — é só a margem de segurança pro cron
+    (roda 1x/min) não perder o envio por 1-2s de diferença. Campo `alarmeContagem` (number,
+    quantos envios já saíram) continua existindo mesmo com `MAX_REENVIOS=1`, pra manter o
+    mesmo mecanismo caso o número suba de novo no futuro. **Essencial**: `renotify: true`
+    no `showNotification()` do `sw.js` continua lá — não atrapalha com envio único, mas
+    seria necessário se o número de reenvios voltar a subir.
 - **Padrão "Salvar" otimista (2026-09-30, `agenda.js`/`agenda-concluidos.js`)**: os botões
   "Salvar" NÃO esperam (`await`) a promessa do `col.salvar()` do Firestore resolver antes de
   fechar a tela — fecham na hora e só mostram alerta depois, em segundo plano, se der erro.

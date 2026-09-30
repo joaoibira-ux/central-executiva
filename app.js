@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.35";
+const VERSAO_CENTRAL = "1.36";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -244,6 +244,61 @@ if (typeof colecao === "function") {
     checarAlarmes();
   });
   setInterval(checarAlarmes, 60000);
+}
+
+// ---------- Notificações push (alarme de verdade, mesmo com app fechado/tela
+// bloqueada — 2026-09-30). O beep acima só funciona com a página aberta; isto
+// aqui é entregue pelo sistema operacional, disparado por uma rotina na VM
+// (ver CLAUDE.md), então precisa de permissão do usuário e de uma inscrição
+// (pushSubscription) salva no perfil (usuarios/{uid}). Chave pública VAPID —
+// só a privada (na VM) é secreta.
+const VAPID_PUBLIC = "BI-QNNigJ-E46OdtwXJtK1DVyILMXRmKeGPYJqsO4RSkYCHHHFqZU7v7tq-meBJa35jNy2c998nWKgf0j4dlSPo";
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+async function salvarInscricaoPush(sub) {
+  const uid = await prontoAuth;
+  if (!uid) return;
+  await db.collection("usuarios").doc(uid).set({ pushSubscription: sub.toJSON() }, { merge: true });
+}
+async function ativarNotificacoes() {
+  try {
+    const permissao = await Notification.requestPermission();
+    if (permissao !== "granted") return;
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) });
+    await salvarInscricaoPush(sub);
+    localStorage.setItem("central_push_ativo", "1");
+    const banner = document.getElementById("aviso-notificacoes");
+    if (banner) banner.remove();
+  } catch (e) { /* navegador sem suporte, ou usuário recusou — ignora */ }
+}
+function mostrarConviteNotificacoes() {
+  if (document.getElementById("aviso-notificacoes")) return;
+  const div = document.createElement("div");
+  div.id = "aviso-notificacoes";
+  div.className = "alarme-banner";
+  div.innerHTML = `<span>🔔 Ativar notificações do alarme de compromissos?</span><button type="button" id="btn-ativar-notif" class="btn mini">Ativar</button><button type="button" id="btn-fechar-notif" aria-label="Fechar">×</button>`;
+  div.querySelector("#btn-ativar-notif").onclick = ativarNotificacoes;
+  div.querySelector("#btn-fechar-notif").onclick = () => { div.remove(); localStorage.setItem("central_push_dispensado", "1"); };
+  document.body.appendChild(div);
+}
+if (usaFirebase && "Notification" in window && "serviceWorker" in navigator && "PushManager" in window && !NA_TELA_DE_LOGIN) {
+  prontoAuth.then(uid => {
+    if (!uid) return;
+    if (Notification.permission === "granted") {
+      navigator.serviceWorker.ready.then(async reg => {
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) salvarInscricaoPush(sub);
+      });
+    } else if (Notification.permission === "default" && !localStorage.getItem("central_push_dispensado")) {
+      document.addEventListener("DOMContentLoaded", mostrarConviteNotificacoes);
+    }
+  });
 }
 
 // Camada de dados: Firestore (isolado por usuário) quando configurado, localStorage

@@ -133,6 +133,7 @@ label { display: block; margin: 10px 0 4px; font-size: .8rem; color: var(--suave
   padding: 12px 14px; color: var(--texto); font-size: .85rem; box-shadow: 0 0 18px rgba(255, 93, 108, .5);
 }
 .alarme-banner button { border: 0; background: transparent; color: var(--texto); font-size: 1.1rem; line-height: 1; cursor: pointer; padding: 0 2px; }
+.alarme-banner .btn { background: var(--azul); color: #021227; font-weight: 600; font-size: .8rem; line-height: normal; flex: none; }
 
 /* Aviso de data importante hoje, no menu principal */
 .aviso-datas {

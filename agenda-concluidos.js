@@ -189,7 +189,7 @@ $("f-anexos-lista").onclick = e => {
 $("salvar").onclick = async () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando };
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeEnviado: false };
   await col.salvar(editandoId, dados);
   fechar();
   if (veiodaVisualizacao) {

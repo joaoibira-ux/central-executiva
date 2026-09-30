@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "agenda",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "data", "order": "ASCENDING" },
+        { "fieldPath": "feito", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

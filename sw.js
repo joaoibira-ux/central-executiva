@@ -1,4 +1,4 @@
-const VERSION = "central-v36";
+const VERSION = "central-v37";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./datas.html",
   "./login.html",
   "./style.css?v=24",
-  "./app.js?v=23",
+  "./app.js?v=24",
   "./contatos.js?v=5",
   "./agenda.js?v=5",
   "./agenda-concluidos.js?v=1",
@@ -49,4 +49,29 @@ self.addEventListener("fetch", e => {
     return;
   }
   e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+});
+
+// ---------- Alarme de compromissos via Web Push (2026-09-30) ----------
+// Disparado por uma rotina na VM (ver CLAUDE.md) — funciona mesmo com o app
+// fechado/tela bloqueada, ao contrário do beep em página aberta (limitado no iOS).
+self.addEventListener("push", e => {
+  let dados = { title: "⏰ Central Executiva", body: "Você tem um compromisso agora." };
+  try { if (e.data) dados = e.data.json(); } catch (err) { /* mantém padrão */ }
+  e.waitUntil(self.registration.showNotification(dados.title, {
+    body: dados.body,
+    icon: "./icone.svg",
+    badge: "./icone.svg",
+    tag: dados.tag || "alarme-agenda"
+  }));
+});
+
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(lista => {
+      const existente = lista.find(c => c.url.includes("agenda"));
+      if (existente) return existente.focus();
+      return self.clients.openWindow("./agenda.html");
+    })
+  );
 });

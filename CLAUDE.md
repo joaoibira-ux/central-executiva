@@ -117,8 +117,41 @@ para todos"). Implementado assim:
   toda página): enquanto o app está aberto, compara a cada 60s (e a cada mudança na coleção
   `agenda`) se algum compromisso de hoje não concluído acabou de chegar na hora (até 5min de
   atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`).
-  Não é push de verdade (site estático) — só funciona com o app aberto, registrado em
-  `localStorage` (`central_alarmes_disparados`) pra não repetir no mesmo dia. O ícone
-  "Agenda" no menu (`index.html`) ganha um badge vermelho (`.badge-pendencia`) com a
-  contagem de compromissos não concluídos de hoje ou atrasados.
+  Isso sozinho NÃO é confiável no iPhone (Safari só libera áudio depois de um toque real na
+  própria página, e suspende o contexto nesse meio-tempo) — ver a solução de push abaixo,
+  que é a que vale de verdade. O ícone "Agenda" no menu (`index.html`) ganha um badge
+  vermelho (`.badge-pendencia`) com a contagem de compromissos não concluídos de hoje ou
+  atrasados.
+- **Alarme de verdade via Web Push (2026-09-30)** — funciona com o app fechado/tela
+  bloqueada, ao contrário do beep acima (o João reclamou explicitamente que "uma agenda sem
+  alarme não serve pra nada", isso resolve de vez):
+  - Chaves VAPID geradas com `web-push generate-vapid-keys` — a pública está hardcoded em
+    `app.js` (`VAPID_PUBLIC`, seguro expor), a privada fica **só** em
+    `~/ce-push-alarmes/vapid-keys.json` na VM (`instance-20260726-022533`, chmod 600, nunca
+    commitada).
+  - Cliente (`app.js`, roda em toda página exceto login): se o navegador suporta
+    Notification/ServiceWorker/PushManager e o usuário está logado, mostra um banner
+    "🔔 Ativar notificações" (uma vez só, `localStorage.central_push_dispensado` se
+    recusar). Ao aceitar: pede permissão, assina push (`pushManager.subscribe`) e salva o
+    objeto de inscrição em `usuarios/{uid}.pushSubscription` (documento raiz do usuário, não
+    subcoleção). iPhone precisa do app instalado na tela de início e iOS 16.4+.
+  - `sw.js` tem os listeners `push` (mostra a notificação, `self.registration.showNotification`)
+    e `notificationclick` (foca/abre `agenda.html`).
+  - Servidor: `~/ce-push-alarmes/alarmes-push.js` na VM, cron **a cada 1 minuto**
+    (`* * * * * cd /home/joaog/ce-push-alarmes && node alarmes-push.js`). Usa a MESMA
+    service account do bot de confirmação (`~/ce-bot-key.json`) e faz uma
+    **collection group query** em `agenda` (`where data==hoje, feito==false`) cruzando
+    todos os usuários de uma vez — por isso existe `firestore.indexes.json` no repo
+    (`collectionGroup: "agenda"`, campos `data`+`feito`), publicado via
+    `firebase deploy --only firestore:indexes`. Pra cada compromisso cuja hora chegou (até
+    2min de atraso) e ainda não tem `alarmeEnviado`, busca `usuarios/{uid}.pushSubscription`
+    e manda via `web-push`, depois marca `alarmeEnviado: true` no próprio documento do
+    compromisso (pra não repetir). **Editar um compromisso (`agenda.js`/
+    `agenda-concluidos.js`) sempre reseta `alarmeEnviado: false`**, senão mudar a hora não
+    rearmaria o alarme. Log em `~/ce-push-alarmes/log.txt` na VM.
+  - **How to apply**: se o alarme não chegar, checar nessa ordem — (1) o usuário
+    realmente ativou notificações (`usuarios/{uid}.pushSubscription` existe?); (2)
+    `~/ce-push-alarmes/log.txt` na VM mostra tentativa de envio; (3) o índice de collection
+    group está pronto (erro `FAILED_PRECONDITION... index is currently building` na
+    primeira vez é normal, leva alguns minutos).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

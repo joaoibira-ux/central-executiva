@@ -224,7 +224,7 @@ $("salvar").onclick = async () => {
   if (!editandoId) dados.feito = false;
   salvando = true;
   try {
-    await col.salvar(editandoId, dados);
+    await comPrazo(col.salvar(editandoId, dados), 10000, "Demorou demais pra salvar — confira sua conexão e tente de novo.");
     fechar();
     if (veiodaVisualizacao) {
       const feitoAtual = itens.find(x => x.id === editandoId)?.feito;

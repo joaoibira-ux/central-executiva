@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.46";
+const VERSAO_CENTRAL = "1.47";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -191,14 +191,36 @@ function tocarAlarmeSom() {
     });
   } catch (e) { /* navegador sem suporte a áudio ou bloqueado — ignora */ }
 }
+// O site é de várias páginas (não SPA) — ao navegar, a página inteira recarrega
+// e o banner (só existe na memória daquela página) sumiria sozinho. Pra só
+// sumir quando o usuário realmente tocar nele, guardamos qual alarme está
+// ativo em localStorage e reexibimos ao carregar qualquer página, enquanto
+// o compromisso continuar sem "feito" (ver restaurarAlarmeAtivo).
 function mostrarAlarmeBanner(compromisso) {
+  localStorage.setItem("central_alarme_ativo", JSON.stringify({ id: compromisso.id, titulo: compromisso.titulo, local: compromisso.local || "" }));
   const div = document.createElement("div");
   div.className = "alarme-banner alarme-banner-clicavel";
   div.innerHTML = `<span>⏰ <b>${escHtml(compromisso.titulo)}</b> é agora${compromisso.local ? " · " + escHtml(compromisso.local) : ""} — toque para silenciar</span>`;
   tocarAlarmeSom();
   const intervalo = setInterval(tocarAlarmeSom, 5000);
-  div.onclick = () => { clearInterval(intervalo); div.remove(); };
+  div.onclick = () => {
+    clearInterval(intervalo);
+    div.remove();
+    localStorage.removeItem("central_alarme_ativo");
+  };
   document.body.appendChild(div);
+}
+let __alarmeAtivoRestaurado = false;
+function restaurarAlarmeAtivo(lista) {
+  if (__alarmeAtivoRestaurado) return;
+  __alarmeAtivoRestaurado = true;
+  try {
+    const ativo = JSON.parse(localStorage.getItem("central_alarme_ativo") || "null");
+    if (!ativo) return;
+    const item = lista.find(i => i.id === ativo.id);
+    if (item && !item.feito) mostrarAlarmeBanner(item);
+    else localStorage.removeItem("central_alarme_ativo"); // concluído ou excluído em outra tela
+  } catch (e) { /* ignora */ }
 }
 function idsJaAlertadosHoje() {
   const hoje = new Date().toISOString().slice(0, 10);
@@ -254,6 +276,7 @@ if (typeof colecao === "function") {
   colecao("agenda").ouvir(lista => {
     __agendaParaAlarme = lista;
     atualizarBadgeAgenda(lista);
+    restaurarAlarmeAtivo(lista);
     checarAlarmes();
   });
   setInterval(checarAlarmes, 60000);

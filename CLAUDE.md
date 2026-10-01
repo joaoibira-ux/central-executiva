@@ -117,7 +117,13 @@ para todos"). Implementado assim:
   toda página): enquanto o app está aberto, compara a cada 60s (e a cada mudança na coleção
   `agenda`) se algum compromisso de hoje não concluído acabou de chegar na hora (até 5min de
   atraso) — dispara um beep (Web Audio, sem arquivo de áudio) + banner (`.alarme-banner`,
-  persistente — só some se o usuário clicar no ×, não desaparece sozinho). O badge conta só
+  persistente — só some se o usuário TOCAR nele, não desaparece sozinho; sem botão × desde
+  2026-09-30, o aviso inteiro é clicável). **Sobrevive a trocar de página** (o site não é
+  SPA, cada tela recarrega do zero): `mostrarAlarmeBanner()` grava o alarme ativo em
+  `localStorage.central_alarme_ativo` (id/título/local do compromisso), e
+  `restaurarAlarmeAtivo()` reexibe o banner (com o beep de novo) assim que QUALQUER página
+  carrega, enquanto esse compromisso não for marcado `feito` — só some de vez quando o
+  usuário toca nele (ou marca o compromisso como concluído). O badge conta só
   "vencido" de verdade: dia anterior (qualquer hora) OU hoje com hora definida e já passada
   — hoje sem hora, ou hoje com hora ainda não chegada, não entra na contagem (bug corrigido
   em 2026-09-30, contava qualquer pendência de hoje mesmo com horário futuro).

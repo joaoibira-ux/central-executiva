@@ -220,7 +220,7 @@ $("salvar").onclick = () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
   // alarmeContagem:0 garante que editar data/hora rearma os reenvios do alarme por push (VM).
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0, alarmeVisto: false, telegramEnviado: false };
   // Só em criação: em edição não pode sobrescrever "feito" de um item já concluído.
   if (!editandoId) dados.feito = false;
   const idSalvo = editandoId;

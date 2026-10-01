@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Configurações - Central Executiva</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icone.svg" />
+  <link rel="stylesheet" href="./style.css?v=24" />
+</head>
+<body>
+<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Configurações</h2></header>
+<main class="conteudo">
+  <p class="imp-instrucao">Se um alarme de compromisso não for visto em 5 minutos (aviso vermelho não tocado), o sistema pode avisar você também por uma mensagem no Telegram — cada pessoa usa seu próprio bot.</p>
+
+  <label>Token do bot (fale com @BotFather no Telegram, /newbot)</label>
+  <input id="f-token" type="text" autocapitalize="off" autocorrect="off" placeholder="Ex.: 123456789:AAH..." />
+
+  <label>Seu ID de chat (fale com @userinfobot pra descobrir)</label>
+  <input id="f-chatid" type="text" inputmode="numeric" placeholder="Ex.: 123456789" />
+
+  <button class="btn btn-largo" id="salvar" style="margin-top: 16px;">Salvar</button>
+  <p id="status-salvo" class="imp-instrucao" style="display:none; color: var(--azul);">Salvo ✅</p>
+</main>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="./firebase-config.js?v=1"></script>
+<script src="./app.js?v=36"></script>
+<script src="./config.js?v=1"></script>
+</body>
+</html>

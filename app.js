@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.47";
+const VERSAO_CENTRAL = "1.48";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -207,6 +207,10 @@ function mostrarAlarmeBanner(compromisso) {
     clearInterval(intervalo);
     div.remove();
     localStorage.removeItem("central_alarme_ativo");
+    // alarmeVisto:true evita que a VM escalone esse alarme pro Telegram (ver
+    // alarmes-push.js) — só quando o usuário tocar no aviso, não quando marcar
+    // "feito" (que já para o alarme por outro caminho, visto ou não).
+    if (typeof colecao === "function") colecao("agenda").salvar(compromisso.id, { alarmeVisto: true });
   };
   document.body.appendChild(div);
 }

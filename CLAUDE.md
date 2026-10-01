@@ -198,6 +198,18 @@ para todos"). Implementado assim:
     mesmo mecanismo caso o número suba de novo no futuro. **Essencial**: `renotify: true`
     no `showNotification()` do `sw.js` continua lá — não atrapalha com envio único, mas
     seria necessário se o número de reenvios voltar a subir.
+  - **Escalonamento por Telegram (2026-09-30)**: se o aviso vermelho (`.alarme-banner`) não
+    for tocado em `JANELA_TELEGRAM_MIN` (5) minutos, `alarmes-push.js` manda uma mensagem
+    via bot do PRÓPRIO usuário — "cada usuário cadastra o seu", decisão explícita do João
+    pra não depender de um bot/token compartilhado. Cadastro em `config.html`/`config.js`
+    (ícone 🔐 "Configurações" no menu), campos `telegramBotToken`/`telegramChatId` gravados
+    em `usuarios/{uid}` (mesmo documento raiz do perfil, igual `pushSubscription`/
+    `whatsapp`). Tocar no aviso vermelho (`app.js`, `mostrarAlarmeBanner`) grava
+    `alarmeVisto: true` no compromisso — é esse campo que impede o escalonamento, não
+    marcar `feito` (são coisas diferentes: pode ter visto o alarme sem ainda ter concluído
+    a tarefa). Editar um compromisso reseta `alarmeVisto`/`telegramEnviado`/`alarmeContagem`
+    todos pra rearmar o fluxo inteiro. Token do bot NUNCA fica hardcoded em lugar nenhum —
+    sempre lido do Firestore em tempo de execução pelo `alarmes-push.js`.
 - **Padrão "Salvar" otimista (2026-09-30, `agenda.js`/`agenda-concluidos.js`)**: os botões
   "Salvar" NÃO esperam (`await`) a promessa do `col.salvar()` do Firestore resolver antes de
   fechar a tela — fecham na hora e só mostram alerta depois, em segundo plano, se der erro.

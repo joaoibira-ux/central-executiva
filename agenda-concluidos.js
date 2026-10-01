@@ -191,7 +191,7 @@ $("f-anexos-lista").onclick = e => {
 $("salvar").onclick = () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
   if (!titulo || !data) { alert("Informe título e data."); return; }
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0 };
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0, alarmeVisto: false, telegramEnviado: false };
   const idSalvo = editandoId;
   col.salvar(idSalvo, dados).catch(e => alert("Não deu pra salvar: " + e.message));
   fechar();

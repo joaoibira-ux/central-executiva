@@ -18,20 +18,17 @@ function fmtDataHora(iso) {
 }
 
 function render() {
-  const l = [...itens].sort((a, b) => {
-    const concluidoA = a.status === "concluido" && !atrasoDescida.has(a.id);
-    const concluidoB = b.status === "concluido" && !atrasoDescida.has(b.id);
-    if (concluidoA !== concluidoB) return concluidoA ? 1 : -1;
-    return (b.criadoEm || "").localeCompare(a.criadoEm || "");
-  });
-  let html = "", entrouConcluidos = false;
+  // Concluídos saem da lista principal (vão para desenvolvimento-concluidos.html) —
+  // só ficam aqui durante a janela de 2s da animação de check (atrasoDescida).
+  const l = itens
+    .filter(i => i.status !== "concluido" || atrasoDescida.has(i.id))
+    .sort((a, b) => (b.criadoEm || "").localeCompare(a.criadoEm || ""));
+  let html = "";
   l.forEach(i => {
-    const concluido = i.status === "concluido" && !atrasoDescida.has(i.id);
-    if (concluido && !entrouConcluidos) { entrouConcluidos = true; html += `<div class="dia">Concluídos</div>`; }
-    html += `<div class="card ${concluido ? "feito" : ""}" data-id="${i.id}">
+    html += `<div class="card ${i.status === "concluido" ? "feito" : ""}" data-id="${i.id}">
       <input type="checkbox" ${i.status === "concluido" ? "checked" : ""} data-feito="${i.id}" />
       <div class="info"><b>${escHtml(i.texto)}</b>
-        <small>${i.status === "concluido" ? escHtml(i.notaConclusao || fmtDataHora(i.concluidoEm)) : "Desde " + escHtml(fmtDataHora(i.criadoEm))}</small></div>
+        <small>Desde ${escHtml(fmtDataHora(i.criadoEm))}</small></div>
     </div>`;
   });
   $("lista").innerHTML = html || `<p class="vazio">Nenhuma pendência — tudo em dia.</p>`;
@@ -101,15 +98,19 @@ $("ver-excluir").onclick = async () => {
   if (confirm("Excluir este item?")) { veiodaVisualizacao = false; await col.remover(editandoId); fecharVisualizacao(); }
 };
 
-$("salvar").onclick = async () => {
+// Não espera a gravação confirmar antes de fechar (ver mesmo padrão em
+// agenda.js) — esperar causava telas de "Salvar" que pareciam travadas no
+// iPhone, mesmo a gravação completando normalmente.
+$("salvar").onclick = () => {
   const texto = $("f-texto").value.trim();
   if (!texto) { alert("Descreva o item."); return; }
   const dados = { texto, notaConclusao: $("f-nota").value.trim() };
-  await col.salvar(editandoId, dados);
+  const idSalvo = editandoId;
+  col.salvar(idSalvo, dados).catch(e => alert("Não deu pra salvar: " + e.message));
   fechar();
   if (veiodaVisualizacao) {
-    const atual = itens.find(x => x.id === editandoId) || {};
-    visualizar({ ...atual, ...dados, id: editandoId });
+    const atual = itens.find(x => x.id === idSalvo) || {};
+    visualizar({ ...atual, ...dados, id: idSalvo });
   }
 };
 $("excluir").onclick = async () => {

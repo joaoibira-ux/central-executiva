@@ -219,4 +219,20 @@ para todos"). Implementado assim:
   Chegou a existir uma trava contra duplo-clique + timeout de 10s (removida), que não
   resolvia a causa raiz, só limitava o estrago. **Seguir esse mesmo padrão otimista em
   qualquer novo formulário** (não usar `await col.salvar(...)` antes de fechar modal).
+- **Pendências (2026-10-08, `pendencias.html`/`.js`, ícone 🎯)**: usa a MESMA coleção
+  `agenda` (mesmo `colecao("agenda")`), só que filtrada pelo oposto — `agenda.js` só mostra
+  itens COM `data`, `pendencias.js` só mostra itens SEM `data`. Criar uma pendência sem data
+  e depois editar adicionando data+hora faz o item sumir de Pendências e aparecer na Agenda
+  sozinho, sem nenhum código especial de "conversão" — é automático pelo filtro. Formulário
+  de Pendências é mais simples que o de Agenda (só título + data/hora opcionais, sem
+  local/obs/anexos).
+- **Novo compromisso por voz (2026-10-08, ícone 🎤 no menu → `agenda.html?voz=1`)**: abre
+  direto o formulário "Novo compromisso" e tenta iniciar a Web Speech API
+  (`SpeechRecognition`) preenchendo o Título em tempo real. **iPhone/Safari não suporta essa
+  API** (sem erro, só não faz nada) — nesse caso o campo Título já fica focado, e o usuário
+  usa o microfone do próprio teclado do iOS pra ditar (sempre funciona, é o teclado nativo).
+- **Desenvolvimento — concluídos em página própria (2026-10-08)**: mesmo padrão da Agenda —
+  `desenvolvimento.js` filtra `status !== "concluido"` pra fora da lista principal (só
+  mostra por 2s na animação do check), itens concluídos vivem em
+  `desenvolvimento-concluidos.html`/`.js` (link "✓" no topo de Desenvolvimento).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

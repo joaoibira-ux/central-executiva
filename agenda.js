@@ -93,8 +93,10 @@ const atrasoDescida = new Map(); // id -> setTimeout, enquanto o item ainda não
 function render() {
   // Compromissos concluídos saem da lista principal (vão para agenda-concluidos.html) —
   // só ficam aqui durante a janela de 2s da animação de check (atrasoDescida).
+  // Itens sem "data" são pendências (ver pendencias.html) — a mesma coleção serve os
+  // dois: sem data+hora é pendência, com data+hora vira registro de agenda.
   const l = itens
-    .filter(i => !i.feito || atrasoDescida.has(i.id))
+    .filter(i => i.data && (!i.feito || atrasoDescida.has(i.id)))
     .sort((a, b) => {
       if (a.data !== b.data) return (a.data || "").localeCompare(b.data || "");
       return (a.hora || "").localeCompare(b.hora || "");
@@ -244,3 +246,23 @@ col.ouvir(l => {
     if (atual) visualizar(atual); else fecharVisualizacao();
   }
 });
+
+// ---------- Acesso rápido por voz (?voz=1 na URL, link do menu principal) ----------
+// Abre direto "Novo compromisso" e tenta ligar o microfone sozinho (Web Speech API).
+// iPhone/Safari não suporta essa API — nesse caso o campo Título já fica focado, e o
+// usuário usa o microfone do próprio teclado do iOS pra ditar (sempre disponível ali).
+if (new URLSearchParams(location.search).get("voz")) {
+  veiodaVisualizacao = false;
+  abrir(null);
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR) {
+    try {
+      const rec = new SR();
+      rec.lang = "pt-BR";
+      rec.continuous = false;
+      rec.interimResults = true;
+      rec.onresult = e => { $("f-titulo").value = Array.from(e.results).map(r => r[0].transcript).join(""); };
+      rec.start();
+    } catch (e) { /* microfone negado ou API indisponível — campo já fica focado */ }
+  }
+}

@@ -256,6 +256,7 @@ col.ouvir(l => {
 if (new URLSearchParams(location.search).get("voz")) {
   veiodaVisualizacao = false;
   abrir(null);
+  $("f-data").value = ""; // sem sugerir "hoje" — por voz, vira pendência se não der data
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     try {

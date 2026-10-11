@@ -220,7 +220,9 @@ $("f-anexos-lista").onclick = e => {
 // avisa depois, em segundo plano, se realmente der erro.
 $("salvar").onclick = () => {
   const titulo = $("f-titulo").value.trim(), data = $("f-data").value;
-  if (!titulo || !data) { alert("Informe título e data."); return; }
+  if (!titulo) { alert("Informe o título."); return; }
+  // Data é opcional aqui: salvar sem data faz o item virar pendência (ver
+  // pendencias.html) — mesma coleção, só muda o filtro de cada tela.
   // alarmeContagem:0 garante que editar data/hora rearma os reenvios do alarme por push (VM).
   const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0, alarmeVisto: false, telegramEnviado: false };
   // Só em criação: em edição não pode sobrescrever "feito" de um item já concluído.

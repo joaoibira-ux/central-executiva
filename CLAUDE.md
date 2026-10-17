@@ -235,4 +235,18 @@ para todos"). Implementado assim:
   `desenvolvimento.js` filtra `status !== "concluido"` pra fora da lista principal (só
   mostra por 2s na animação do check), itens concluídos vivem em
   `desenvolvimento-concluidos.html`/`.js` (link "✓" no topo de Desenvolvimento).
+- **Mensagens programadas pro WhatsApp (2026-10-17, ícone 💬, `mensagens.html`/`.js` +
+  `mensagens-enviadas.html`/`.js`)**: escolhe um contato (telefone vem de Contatos),
+  escreve a mensagem, marca data/hora — e **envia sozinho de verdade**, sem revisão antes
+  (diferente do lembrete de aniversário de Datas importantes, que só abre o WhatsApp
+  pronto). Decisão explícita do João. Coleção `mensagensProgramadas` em `usuarios/{uid}/`
+  (campos `contatoId`/`contatoNome`/`telefone`/`mensagem`/`data`/`hora`/`enviada`/
+  `enviadaEm`). Servidor: `~/ce-mensagens-whatsapp/enviar.js` na VM, cron a cada minuto,
+  mesmo padrão de `alarmes-push.js` (collection group query, fuso Brasil tratado por
+  deslocamento de -3h, field override de índice em `firestore.indexes.json` pra
+  `mensagensProgramadas`/`data`). Manda pela **mesma Evolution API/instância "gw"** já
+  usada pelo GW e pela confirmação de cadastro (`~/ce-whatsapp-confirmacao/index.js`) —
+  reaproveita exatamente `normalizarNumeroBR`/`enviarWhatsApp`/leitura da API key de
+  `~/evolution-api/.env` desse script. Se o envio falhar (Evolution API fora do ar etc.),
+  NÃO marca `enviada` — tenta de novo no próximo minuto, dentro de `JANELA_MINUTOS` (3).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)

@@ -1,4 +1,4 @@
-const VERSION = "central-v53";
+const VERSION = "central-v54";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
@@ -14,7 +14,7 @@ const ASSETS = [
   "./datas.html",
   "./login.html",
   "./style.css?v=24",
-  "./app.js?v=40",
+  "./app.js?v=41",
   "./contatos.js?v=5",
   "./agenda.js?v=14",
   "./agenda-concluidos.js?v=6",
@@ -29,7 +29,10 @@ const ASSETS = [
   "./login.js?v=2",
   "./firebase-config.js?v=1",
   "./manifest.json",
-  "./icone.svg"
+  "./icone.svg",
+  "./icone.png",
+  "./icone-voz.svg",
+  "./icone-voz.png"
 ];
 
 self.addEventListener("install", e => {

@@ -1,4 +1,4 @@
-const VERSION = "central-v54";
+const VERSION = "central-v55";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
@@ -14,10 +14,10 @@ const ASSETS = [
   "./datas.html",
   "./login.html",
   "./style.css?v=24",
-  "./app.js?v=41",
+  "./app.js?v=42",
   "./contatos.js?v=5",
-  "./agenda.js?v=14",
-  "./agenda-concluidos.js?v=6",
+  "./agenda.js?v=15",
+  "./agenda-concluidos.js?v=7",
   "./config.js?v=1",
   "./pendencias.js?v=1",
   "./mensagens.js?v=1",

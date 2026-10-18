@@ -210,6 +210,14 @@ para todos"). Implementado assim:
     a tarefa). Editar um compromisso reseta `alarmeVisto`/`telegramEnviado`/`alarmeContagem`
     todos pra rearmar o fluxo inteiro. Token do bot NUNCA fica hardcoded em lugar nenhum —
     sempre lido do Firestore em tempo de execução pelo `alarmes-push.js`.
+  - **Escalonamento final por WhatsApp (2026-10-18)**: se passar mais `JANELA_WHATSAPP_MIN`
+    (10, contado da hora do compromisso) ainda sem `alarmeVisto`, manda WhatsApp pro número
+    do PRÓPRIO dono da conta (`usuarios/{uid}.whatsapp`, o mesmo do cadastro/login) — "pro
+    meu se for eu, o da Anne se for ela" (decisão do João: sempre o dono da conta que
+    estiver logada, nunca um número fixo). Mesma Evolution API/instância "gw" das mensagens
+    programadas e da confirmação de cadastro. Campo `whatsappEnviado` (bool) evita reenvio;
+    reseta junto com `alarmeVisto`/`telegramEnviado`/`alarmeContagem` ao editar o
+    compromisso.
 - **Padrão "Salvar" otimista (2026-09-30, `agenda.js`/`agenda-concluidos.js`)**: os botões
   "Salvar" NÃO esperam (`await`) a promessa do `col.salvar()` do Firestore resolver antes de
   fechar a tela — fecham na hora e só mostram alerta depois, em segundo plano, se der erro.

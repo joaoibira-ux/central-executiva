@@ -224,7 +224,7 @@ $("salvar").onclick = () => {
   // Data é opcional aqui: salvar sem data faz o item virar pendência (ver
   // pendencias.html) — mesma coleção, só muda o filtro de cada tela.
   // alarmeContagem:0 garante que editar data/hora rearma os reenvios do alarme por push (VM).
-  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0, alarmeVisto: false, telegramEnviado: false };
+  const dados = { titulo, data, hora: $("f-hora").value, local: $("f-local").value.trim(), obs: $("f-obs").value.trim(), anexos: anexosEditando, alarmeContagem: 0, alarmeVisto: false, telegramEnviado: false, whatsappEnviado: false };
   // Só em criação: em edição não pode sobrescrever "feito" de um item já concluído.
   if (!editandoId) dados.feito = false;
   const idSalvo = editandoId;

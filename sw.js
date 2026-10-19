@@ -1,9 +1,10 @@
-const VERSION = "central-v55";
+const VERSION = "central-v56";
 const ASSETS = [
   "./index.html",
   "./contatos.html",
   "./agenda.html",
   "./agenda-concluidos.html",
+  "./voz.html",
   "./config.html",
   "./pendencias.html",
   "./mensagens.html",

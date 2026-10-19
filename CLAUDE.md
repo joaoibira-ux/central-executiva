@@ -239,6 +239,18 @@ para todos"). Implementado assim:
   (`SpeechRecognition`) preenchendo o Título em tempo real. **iPhone/Safari não suporta essa
   API** (sem erro, só não faz nada) — nesse caso o campo Título já fica focado, e o usuário
   usa o microfone do próprio teclado do iOS pra ditar (sempre funciona, é o teclado nativo).
+  **Nenhum site (nem app nativo) consegue começar a gravar/ouvir sozinho** — o iOS sempre
+  exige 1 toque do usuário no microfone antes, é trava de segurança do sistema, não dá pra
+  contornar via código.
+- **Atalho de voz na Tela de Início (2026-10-19, `voz.html`, ícone `icone-voz.png`)**:
+  "Adicionar à Tela de Início" numa página que referencia o `manifest.json` do app faz o
+  iOS tratar como "abrir o app principal já instalado" — ignora o ícone/nome daquela página
+  específica e sempre usa o ícone/nome genérico da Central Executiva (bug descoberto
+  2026-10-19 quando o atalho criado veio com o ícone errado). Por isso `voz.html` existe
+  como página separada e **propositalmente sem `<link rel="manifest">`** — só assim o iOS
+  cria um atalho de verdade, com ícone (microfone) e nome ("Voz") próprios; o body só faz
+  `location.replace("./agenda.html?voz=1")` via JS pra entrar no app normal. **Nunca
+  adicionar `<link rel="manifest">` nela** — quebraria esse comportamento nos mesmos moldes.
 - **Desenvolvimento — concluídos em página própria (2026-10-08)**: mesmo padrão da Agenda —
   `desenvolvimento.js` filtra `status !== "concluido"` pra fora da lista principal (só
   mostra por 2s na animação do check), itens concluídos vivem em

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Propositalmente SEM <link rel="manifest">: se essa página referenciar o
+       manifest do app principal, o iOS trata "Adicionar à Tela de Início" como
+       "abrir o app já instalado" em vez de criar um atalho separado — ignora o
+       ícone/nome própria da página e sempre abre o CE genérico (foi o que
+       aconteceu antes). Sem manifest, vira um atalho de verdade, com seu
+       próprio ícone/nome, e via JS navega pra dentro do app normalmente. -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Voz" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Voz - Central Executiva</title>
+  <link rel="icon" href="./icone-voz.svg" />
+  <link rel="apple-touch-icon" href="./icone-voz.png" />
+</head>
+<body style="background:#040b1c"></body>
+<script>location.replace("./agenda.html?voz=1");</script>
+</html>

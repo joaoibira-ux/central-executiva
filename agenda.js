@@ -249,14 +249,116 @@ col.ouvir(l => {
   }
 });
 
+// ---------- Interpretação de data/hora faladas (fluxo de voz abaixo) ----------
+// Best-effort: cobre os jeitos mais comuns de falar, não é um parser completo.
+// Se não entender, retorna null e quem chamou decide o que fazer (não avança).
+const MESES_FALADOS = { janeiro: 1, fevereiro: 2, "março": 3, marco: 3, abril: 4, maio: 5, junho: 6, julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12 };
+const DIAS_SEMANA_FALADOS = { domingo: 0, segunda: 1, "segunda-feira": 1, "terça": 2, terca: 2, "terça-feira": 2, quarta: 3, "quarta-feira": 3, quinta: 4, "quinta-feira": 4, sexta: 5, "sexta-feira": 5, sabado: 6, "sábado": 6 };
+
+function interpretarDataFalada(texto) {
+  const t = (texto || "").trim().toLowerCase().replace(/[.,]/g, "");
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const paraISO = d => d.toISOString().slice(0, 10);
+  if (/depois de amanh[ãa]/.test(t)) return paraISO(new Date(hoje.getTime() + 2 * 864e5));
+  if (/amanh[ãa]/.test(t)) return paraISO(new Date(hoje.getTime() + 864e5));
+  if (/^hoje$/.test(t)) return paraISO(hoje);
+  for (const nome in DIAS_SEMANA_FALADOS) {
+    if (t.includes(nome)) {
+      const d = new Date(hoje);
+      do { d.setDate(d.getDate() + 1); } while (d.getDay() !== DIAS_SEMANA_FALADOS[nome]);
+      return paraISO(d);
+    }
+  }
+  const mBarra = t.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})/);
+  if (mBarra) {
+    const dia = Number(mBarra[1]), mes = Number(mBarra[2]);
+    let d = new Date(hoje.getFullYear(), mes - 1, dia);
+    if (d < hoje) d = new Date(hoje.getFullYear() + 1, mes - 1, dia);
+    if (!isNaN(d) && d.getDate() === dia) return paraISO(d);
+  }
+  const mNomeMes = t.match(/(\d{1,2})\s*(?:de\s*)?(janeiro|fevereiro|março|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)/);
+  if (mNomeMes) {
+    const dia = Number(mNomeMes[1]), mes = MESES_FALADOS[mNomeMes[2]];
+    let d = new Date(hoje.getFullYear(), mes - 1, dia);
+    if (d < hoje) d = new Date(hoje.getFullYear() + 1, mes - 1, dia);
+    if (!isNaN(d) && d.getDate() === dia) return paraISO(d);
+  }
+  const mSoDia = t.match(/dia\s*(\d{1,2})/);
+  if (mSoDia) {
+    const dia = Number(mSoDia[1]);
+    let d = new Date(hoje.getFullYear(), hoje.getMonth(), dia);
+    if (d < hoje) d = new Date(hoje.getFullYear(), hoje.getMonth() + 1, dia);
+    if (!isNaN(d) && d.getDate() === dia) return paraISO(d);
+  }
+  return null;
+}
+
+function interpretarHoraFalada(texto) {
+  const t = (texto || "").trim().toLowerCase().replace(/[.,]/g, "");
+  if (/meio\s*dia/.test(t)) return "12:00";
+  if (/meia\s*noite/.test(t)) return "00:00";
+  let h = null, m = 0;
+  const mHM = t.match(/(\d{1,2})\s*[:h]\s*(\d{2})?/);
+  if (mHM) { h = Number(mHM[1]); m = mHM[2] ? Number(mHM[2]) : 0; }
+  else {
+    const mSo = t.match(/(\d{1,2})\s*horas?/);
+    if (mSo) h = Number(mSo[1]);
+  }
+  if (h === null) return null;
+  if (/e\s*meia/.test(t)) m = 30;
+  else if (/e\s*quinze/.test(t)) m = 15;
+  const tarde = /tarde/.test(t), noite = /noite/.test(t), manha = /manh[ãa]/.test(t);
+  if ((tarde || noite) && h < 12) h += 12;
+  if (manha && h === 12) h = 0;
+  if (h < 0 || h > 23 || m < 0 || m > 59) return null;
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+
 // ---------- Acesso rápido por voz (?voz=1 na URL, link do menu principal) ----------
-// Abre direto "Novo compromisso" e tenta ligar o microfone sozinho (Web Speech API).
-// iPhone/Safari não suporta essa API — nesse caso o campo Título já fica focado, e o
-// usuário usa o microfone do próprio teclado do iOS pra ditar (sempre disponível ali).
+// Abre direto "Novo compromisso" com Título focado. iPhone/Safari não suporta Web
+// Speech API — o usuário dita pelo microfone do próprio teclado do iOS (sempre
+// disponível em campo de texto) e toca "próximo"/"concluído" no teclado pra avançar.
+// Data e Hora viram campos de TEXTO nesse modo (o seletor nativo de data/hora não
+// tem teclado nem microfone) — ao avançar, o texto falado é interpretado
+// (interpretarDataFalada/interpretarHoraFalada) e convertido de volta pro tipo
+// nativo. Terminando a hora, salva e fecha sozinho.
 if (new URLSearchParams(location.search).get("voz")) {
   veiodaVisualizacao = false;
   abrir(null);
-  $("f-data").value = ""; // sem sugerir "hoje" — por voz, vira pendência se não der data
+  const campoTitulo = $("f-titulo"), campoData = $("f-data"), campoHora = $("f-hora");
+  campoData.value = ""; // sem sugerir "hoje" — por voz, vira pendência se não der data
+
+  campoTitulo.setAttribute("enterkeyhint", "next");
+  campoData.setAttribute("type", "text");
+  campoData.setAttribute("placeholder", "Fale a data: hoje, amanhã, dia 20...");
+  campoData.setAttribute("enterkeyhint", "next");
+  campoHora.setAttribute("type", "text");
+  campoHora.setAttribute("placeholder", "Fale a hora: 15h, 3 da tarde...");
+  campoHora.setAttribute("enterkeyhint", "done");
+
+  function aoConfirmarCampo(campo, fn) {
+    campo.addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); fn(); }
+    });
+  }
+  aoConfirmarCampo(campoTitulo, () => campoData.focus());
+  aoConfirmarCampo(campoData, () => {
+    const iso = interpretarDataFalada(campoData.value);
+    if (!iso) { alert('Não entendi a data — tente "hoje", "amanhã" ou "dia 20".'); return; }
+    campoData.setAttribute("type", "date");
+    campoData.value = iso;
+    campoHora.focus();
+  });
+  aoConfirmarCampo(campoHora, () => {
+    const texto = campoHora.value.trim();
+    if (!texto) { campoHora.setAttribute("type", "time"); campoHora.value = ""; $("salvar").click(); return; }
+    const hhmm = interpretarHoraFalada(texto);
+    if (!hhmm) { alert('Não entendi a hora — tente "15h", "3 da tarde" ou "15:30".'); return; }
+    campoHora.setAttribute("type", "time");
+    campoHora.value = hhmm;
+    $("salvar").click();
+  });
+
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     try {
@@ -264,7 +366,7 @@ if (new URLSearchParams(location.search).get("voz")) {
       rec.lang = "pt-BR";
       rec.continuous = false;
       rec.interimResults = true;
-      rec.onresult = e => { $("f-titulo").value = Array.from(e.results).map(r => r[0].transcript).join(""); };
+      rec.onresult = e => { campoTitulo.value = Array.from(e.results).map(r => r[0].transcript).join(""); };
       rec.start();
     } catch (e) { /* microfone negado ou API indisponível — campo já fica focado */ }
   }

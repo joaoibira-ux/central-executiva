@@ -242,6 +242,17 @@ para todos"). Implementado assim:
   **Nenhum site (nem app nativo) consegue começar a gravar/ouvir sozinho** — o iOS sempre
   exige 1 toque do usuário no microfone antes, é trava de segurança do sistema, não dá pra
   contornar via código.
+  - **Avanço automático Título → Data → Hora (2026-10-19)**: os campos de Data e Hora do
+    iOS são um seletor giratório nativo — **sem teclado, sem microfone** (não dá pra ditar
+    neles de jeito nenhum). Nesse fluxo de voz, `agenda.js` troca os dois pra `type="text"`
+    temporariamente (com `enterkeyhint`), deixando o usuário ditar pelo teclado normal; ao
+    apertar "próximo"/"concluído" no teclado (`keydown` com `Enter`), o texto falado é
+    interpretado por `interpretarDataFalada()`/`interpretarHoraFalada()` (best-effort:
+    hoje/amanhã/depois de amanhã, dias da semana, "dia N [de MÊS]", "DD/MM", "15h"/"3 da
+    tarde"/"15:30" etc. — não é um parser completo, frases muito diferentes do esperado não
+    são entendidas e mostram alerta pedindo pra repetir) e o campo volta pro tipo nativo
+    (`date`/`time`) com o valor certo. Terminando a Hora (ou pulando, se vazio), salva e
+    fecha sozinho (`$("salvar").click()`).
 - **Atalho de voz na Tela de Início (2026-10-19, `voz.html`, ícone `icone-voz.png`)**:
   "Adicionar à Tela de Início" numa página que referencia o `manifest.json` do app faz o
   iOS tratar como "abrir o app principal já instalado" — ignora o ícone/nome daquela página

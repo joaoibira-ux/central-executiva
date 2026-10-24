@@ -27,6 +27,10 @@
     <small>Nota de conclusão</small>
     <div id="ver-nota"></div>
   </div>
+  <div class="ver-campo" data-campo="anexos">
+    <small>Anexos</small>
+    <div id="ver-anexos"></div>
+  </div>
   <div class="acoes">
     <button class="btn sec" id="ver-fechar">Fechar</button>
     <button class="btn perigo" id="ver-excluir">Excluir</button>
@@ -37,6 +41,10 @@
   <h3 id="modal-titulo">Novo item</h3>
   <label>Descrição *</label><textarea id="f-texto"></textarea>
   <label>Nota de conclusão</label><textarea id="f-nota"></textarea>
+  <label>Anexos</label>
+  <button type="button" class="btn sec btn-largo" id="escolher-anexo">📎 Adicionar anexo</button>
+  <input type="file" id="f-anexo" accept="image/*,application/pdf" multiple style="display:none" />
+  <div id="f-anexos-lista" class="anexos-lista"></div>
   <div class="acoes">
     <button class="btn sec" id="cancelar">Cancelar</button>
     <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
@@ -46,7 +54,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=43"></script>
-<script src="./desenvolvimento.js?v=2"></script>
+<script src="./app.js?v=44"></script>
+<script src="./desenvolvimento.js?v=3"></script>
 </body>
 </html>

@@ -281,3 +281,22 @@ para todos"). Implementado assim:
   `~/evolution-api/.env` desse script. Se o envio falhar (Evolution API fora do ar etc.),
   NÃO marca `enviada` — tenta de novo no próximo minuto, dentro de `JANELA_MINUTOS` (3).
 - NUNCA commitar `CNAME` antes do DNS estar propagado (derruba o site inteiro)
+- **Aviso de Pendências na Agenda (2026-10-24, v1.57)**: `agenda.html` ganhou um banner
+  fixo no topo (`#aviso-pendencias`, reaproveitando a classe `.aviso-datas` já usada pro
+  aviso de datas importantes no menu), mostrando a contagem de itens pendentes (mesma
+  coleção `agenda`, sem `data`, não `feito`) com link pra `pendencias.html`. Calculado em
+  `agenda.js` dentro do próprio `col.ouvir()` já existente (a Agenda já carrega TODOS os
+  itens da coleção, inclusive os sem data — só filtra na exibição —, então não precisa de
+  uma segunda consulta ao Firestore).
+- **Anexos em Desenvolvimento (2026-10-24, v1.57)**: itens de `desenvolvimento.js` ganharam
+  campo `anexos` (mesmo padrão exato da Agenda — base64 embutido no documento, compressão
+  de imagem no canvas, `LIMITE_ANEXO`=450KB/arquivo, `LIMITE_TOTAL_ANEXOS`=900KB/item).
+  Funções de anexo duplicadas em `desenvolvimento.js` (mesmo padrão de duplicação já usado
+  em outros JS do projeto, não um módulo compartilhado) — se o limite/lógica de compressão
+  mudar na Agenda, replicar manualmente aqui também.
+- **Módulo Contratos (2026-10-24, v1.57, ícone 🗂️ no menu, substituiu o item decorativo
+  🏛️ no slot `--i:10` do HUD circular — todos os 12 slots de 30° já estavam ocupados)**:
+  `contratos.html`/`.js`, coleção `usuarios/{uid}/contratos` (campos `titulo`/`obs`/
+  `anexos`/`criadoEm`). Repositório simples de documentos — sem conceito de "concluído"
+  (não é uma tarefa), cada item é só um nome + anexos (fotos/PDFs do contrato), mesmo
+  padrão de anexos da Agenda/Desenvolvimento.

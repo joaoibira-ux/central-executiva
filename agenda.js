@@ -239,9 +239,24 @@ $("excluir").onclick = async () => {
   if (confirm("Excluir este compromisso?")) { await col.remover(editandoId); fechar(); }
 };
 
+// Aviso de Pendências no topo da Agenda (mesma coleção "agenda", itens sem
+// "data" — ver pendencias.js) — só avisa, não abre nada sozinho.
+function atualizarAvisoPendencias() {
+  const el = $("aviso-pendencias");
+  if (!el) return;
+  const n = itens.filter(i => !i.data && !i.feito).length;
+  if (n > 0) {
+    el.textContent = "🎯 " + n + (n === 1 ? " pendência" : " pendências");
+    el.style.display = "flex";
+  } else {
+    el.style.display = "none";
+  }
+}
+
 col.ouvir(l => {
   itens = l;
   render();
+  atualizarAvisoPendencias();
   // Se a tela de visualização estiver aberta, atualiza com os dados novos (ex.: após salvar)
   if ($("modal-ver").classList.contains("aberto") && editandoId) {
     const atual = itens.find(i => i.id === editandoId);

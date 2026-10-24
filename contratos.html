@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CentralExecutiva" />
+  <meta name="theme-color" content="#040b1c" />
+  <title>Contratos - Central Executiva</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icone.svg" />
+  <link rel="apple-touch-icon" href="./icone.png" />
+  <link rel="stylesheet" href="./style.css?v=24" />
+</head>
+<body>
+<header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Contratos</h2></header>
+<main class="conteudo">
+  <div id="lista"></div>
+</main>
+<button class="fab" id="novo" aria-label="Novo contrato">+</button>
+
+<div class="modal" id="modal-ver"><div class="caixa">
+  <div class="ver-campo" data-campo="titulo"><b id="ver-titulo" class="ver-titulo"></b></div>
+  <div class="ver-campo" data-campo="obs">
+    <small>Observações</small>
+    <div id="ver-obs"></div>
+  </div>
+  <div class="ver-campo" data-campo="anexos">
+    <small>Anexos</small>
+    <div id="ver-anexos"></div>
+  </div>
+  <div class="acoes">
+    <button class="btn sec" id="ver-fechar">Fechar</button>
+    <button class="btn perigo" id="ver-excluir">Excluir</button>
+  </div>
+</div></div>
+
+<div class="modal" id="modal"><div class="caixa">
+  <h3 id="modal-titulo">Novo contrato</h3>
+  <label>Nome do contrato *</label><input id="f-titulo" />
+  <label>Observações</label><textarea id="f-obs"></textarea>
+  <label>Anexos</label>
+  <button type="button" class="btn sec btn-largo" id="escolher-anexo">📎 Adicionar anexo</button>
+  <input type="file" id="f-anexo" accept="image/*,application/pdf" multiple style="display:none" />
+  <div id="f-anexos-lista" class="anexos-lista"></div>
+  <div class="acoes">
+    <button class="btn sec" id="cancelar">Cancelar</button>
+    <button class="btn perigo" id="excluir" style="display:none">Excluir</button>
+    <button class="btn" id="salvar">Salvar</button>
+  </div>
+</div></div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="./firebase-config.js?v=1"></script>
+<script src="./app.js?v=44"></script>
+<script src="./contratos.js?v=1"></script>
+</body>
+</html>

@@ -300,3 +300,23 @@ para todos"). Implementado assim:
   `anexos`/`criadoEm`). Repositório simples de documentos — sem conceito de "concluído"
   (não é uma tarefa), cada item é só um nome + anexos (fotos/PDFs do contrato), mesmo
   padrão de anexos da Agenda/Desenvolvimento.
+- **Conta "órfã" identificada como da Anne, migração concluída (2026-10-25, v1.58)**: ao
+  investigar quem tinha pedido o módulo Contratos (item de Desenvolvimento registrado numa
+  conta que não era a do João), achamos uma segunda conta no Firestore
+  (`6afNQkWXqidbN57BsuZjcasnzSM2`) com dados reais de uso (agenda, desenvolvimento, datas)
+  mas **sem** `email`/`whatsapp`/`criadoEm`/`confirmacaoEnviada` no documento raiz — não
+  tem as marcas de um cadastro feito pela tela de login normal (só tinha
+  `pushSubscription`). O João confirmou: **essa conta é da Anne**, de um uso anterior ao
+  cadastro completo existir. Com a confirmação, rodamos `migrar-dados.js` nesse UID (as
+  coleções soltas antigas que ainda restavam — 1 contato + 1 data importante — foram
+  copiadas pra dentro da conta dela; a coleção `agenda` solta já estava vazia). O UID dela
+  já é fixo (é a conta de autenticação real que ela usa pra entrar) — "atribuir a ela" não
+  mudou nenhum dado, só oficializou o entendimento de quem é a dona.
+  - **Aviso de cadastro incompleto (`app.js`, `mostrarAvisoCadastroIncompleto`)**: toda
+    página (exceto login/config) checa se `usuarios/{uid}.whatsapp` existe; se não, mostra
+    um banner (mesmo estilo `.alarme-banner` do convite de notificações) com link pra
+    Configurações. Dispensar fecha só pela sessão atual (`sessionStorage`, não
+    `localStorage` como o convite de push) — reaparece a cada abertura nova do app até ela
+    completar, porque o campo é usado pelo escalonamento de alarme via WhatsApp. Campo
+    WhatsApp virou editável em `config.html`/`config.js` (antes só era gravado uma vez, no
+    momento do cadastro em `login.js` — agora dá pra completar depois).

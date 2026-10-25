@@ -16,7 +16,11 @@
 <body>
 <header class="topo"><a href="./index.html" aria-label="Voltar">←</a><h2>Configurações</h2></header>
 <main class="conteudo">
-  <p class="imp-instrucao">Se um alarme de compromisso não for visto em 5 minutos (aviso vermelho não tocado), o sistema pode avisar você também por uma mensagem no Telegram — cada pessoa usa seu próprio bot.</p>
+  <p class="imp-instrucao">Seu WhatsApp é usado pro escalonamento final do alarme de compromisso (se o aviso não for visto, chega uma mensagem aqui) e pra confirmação de cadastro.</p>
+  <label>Seu WhatsApp (com DDD)</label>
+  <input id="f-whatsapp" type="tel" placeholder="Ex.: 81999999999" autocomplete="tel" />
+
+  <p class="imp-instrucao" style="margin-top: 20px;">Se um alarme de compromisso não for visto em 5 minutos (aviso vermelho não tocado), o sistema pode avisar você também por uma mensagem no Telegram — cada pessoa usa seu próprio bot.</p>
 
   <label>Token do bot (fale com @BotFather no Telegram, /newbot)</label>
   <input id="f-token" type="text" autocapitalize="off" autocorrect="off" placeholder="Ex.: 123456789:AAH..." />
@@ -31,7 +35,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="./firebase-config.js?v=1"></script>
-<script src="./app.js?v=44"></script>
-<script src="./config.js?v=1"></script>
+<script src="./app.js?v=45"></script>
+<script src="./config.js?v=2"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const VERSAO_CENTRAL = "1.57";
+const VERSAO_CENTRAL = "1.58";
 
 const usaFirebase = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && typeof firebase !== "undefined");
 let db = null;
@@ -341,6 +341,35 @@ if (usaFirebase && "Notification" in window && "serviceWorker" in navigator && "
       // faz tempo quando este .then() roda — o listener nunca seria chamado.
       if (document.body) mostrarConviteNotificacoes();
       else document.addEventListener("DOMContentLoaded", mostrarConviteNotificacoes);
+    }
+  });
+}
+
+// Aviso de cadastro incompleto (2026-10-25): algumas contas (ex.: criadas antes do
+// cadastro completo existir) não têm "whatsapp" salvo em usuarios/{uid} — campo
+// essencial pro escalonamento final do alarme e pra confirmação de cadastro. Avisa
+// em toda página (exceto login/config, onde já dá pra resolver) até ser preenchido;
+// dispensar fecha só pela sessão atual (sessionStorage, não localStorage) — reaparece
+// na próxima vez que abrir o app, diferente do convite de notificações acima.
+const NA_TELA_DE_CONFIG = /(^|\/)config\.html$/.test(location.pathname);
+function mostrarAvisoCadastroIncompleto() {
+  if (document.getElementById("aviso-cadastro")) return;
+  const div = document.createElement("div");
+  div.id = "aviso-cadastro";
+  div.className = "alarme-banner";
+  div.innerHTML = `<span>📋 Complete seu cadastro (falta seu WhatsApp)</span><a href="./config.html" class="btn mini">Completar</a><button type="button" id="btn-fechar-cadastro" aria-label="Fechar">×</button>`;
+  div.querySelector("#btn-fechar-cadastro").onclick = () => { div.remove(); sessionStorage.setItem("central_aviso_cadastro_dispensado", "1"); };
+  document.body.appendChild(div);
+}
+if (usaFirebase && !NA_TELA_DE_LOGIN && !NA_TELA_DE_CONFIG) {
+  prontoAuth.then(async uid => {
+    if (!uid) return;
+    if (sessionStorage.getItem("central_aviso_cadastro_dispensado")) return;
+    const doc = await db.collection("usuarios").doc(uid).get();
+    const dados = doc.data() || {};
+    if (!dados.whatsapp) {
+      if (document.body) mostrarAvisoCadastroIncompleto();
+      else document.addEventListener("DOMContentLoaded", mostrarAvisoCadastroIncompleto);
     }
   });
 }
